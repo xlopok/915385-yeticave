@@ -1,7 +1,7 @@
 # Личный проект «YetiCave»
 
 * Студент: [Никита Воробьев](https://up.htmlacademy.ru/php/8/user/915385).
-* Наставник: `Денис Байдаров`.
+* Наставник: [Денис Байдаров](https://htmlacademy.ru/profile/4er).
 
 ---
 
