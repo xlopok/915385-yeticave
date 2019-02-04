@@ -1,13 +1,13 @@
 <?php
 $is_auth = rand(0, 1);
 
-$user_name = ''; // укажите здесь ваше имя
+$user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Главная</title>
+    <title>Глвная</title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -29,6 +29,23 @@ $user_name = ''; // укажите здесь ваше имя
         <nav class="user-menu">
 
         <!-- здесь должен быть PHP код для показа имени пользователя -->
+        <?php 
+        if($is_auth == 1) {
+           echo "<div class="user-menu__logged">
+             <p>$user_name</p>
+            </div>"
+        } else {
+            echo  "<ul class="user-menu__list">
+                        <li class="user-menu__item">
+                        <a href="">Регистрация</a>
+                        </li>
+                        <li class="user-menu__item">
+                        <a href="">Вход</a>
+                        </li>
+                    </ul>"
+        } 
+        
+        ?>
 
         </nav>
     </div>
