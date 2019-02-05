@@ -7,7 +7,7 @@ $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Глвная</title>
+    <title>Главная</title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -30,22 +30,21 @@ $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 
         <!-- здесь должен быть PHP код для показа имени пользователя -->
         <?php 
-        if($is_auth == 1): 
-          echo '<div class="user-menu__logged">
-             <p>'.$user_name.'</p>
-            </div>'; 
+        if($is_auth): ?>
+          <div class='user-menu__logged'>
+             <p><?=$user_name?></p>
+            </div> 
             
-        else:
-           echo '<ul class="user-menu__list">
+       <?php else: ?>
+           <ul class="user-menu__list">
                         <li class="user-menu__item">
                         <a href="#">Регистрация</a>
                         </li>
                         <li class="user-menu__item">
                         <a href="#">Вход</a>
                         </li>
-                    </ul>';
-        endif;
-        ?>
+                    </ul>
+        <?php endif; ?>
         </nav>
     </div>
 </header>
