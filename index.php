@@ -6,8 +6,8 @@ $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 // массив категорий
 
 $categories_array = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
-$categories_index = 0; // Использовал с while, потом заменил while на foreach
-$categories_count = count($categories_array); // Использовал с while, потом заменил while на foreach
+
+
 
 // массив объявлений 
 
@@ -43,7 +43,12 @@ $list_array = [
         'price' => '5400', 
         'url' => 'img/lot-6.jpg']
 ]
-
+;
+// Функция для прайстега
+function price_tag ($number) {
+    $ceil_number = ceil($number);
+    return number_format( $ceil_number, 0,"." ," ") . " ₽";    
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -122,7 +127,7 @@ $list_array = [
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=$item['price']?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?=price_tag($item['price']);?></span>
                         </div>
                         <div class="lot__timer timer">
                             12:23
