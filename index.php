@@ -47,7 +47,7 @@ $list_array = [
 // Функция для прайстега
 function price_tag ($number) {
     $ceil_number = ceil($number);
-    return $format_number = number_format( $ceil_number, 0,"." ," ") . " ₽";    
+    return number_format( $ceil_number, 0,"." ," ") . " ₽";    
 }
 ?>
 <!DOCTYPE html>
@@ -127,7 +127,7 @@ function price_tag ($number) {
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=price_tag($item['price']);?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?=price_tag($item['price']);?></span>
                         </div>
                         <div class="lot__timer timer">
                             12:23
