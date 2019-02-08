@@ -47,13 +47,7 @@ $list_array = [
 // Функция для прайстега
 function price_tag ($number) {
     $ceil_number = ceil($number);
-     
-    if ($ceil_number < 1000) {
-        echo $ceil_number . " ₽";
-    }
-    else {
-    echo $format_number = number_format( $ceil_number, 0,"." ," ") . " ₽";
-    } 
+    return $format_number = number_format( $ceil_number, 0,"." ," ") . " ₽";    
 }
 ?>
 <!DOCTYPE html>
