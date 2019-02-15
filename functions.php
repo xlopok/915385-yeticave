@@ -6,8 +6,8 @@ function include_template($name, $data) {
     $result = '';
 
     if (!is_readable($name)) {
-        return $result;
-        echo 'Файл недоступен для чтения';
+        return 'Файл недоступен для чтения';
+      
     }
 
     ob_start();
