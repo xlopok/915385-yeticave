@@ -1,12 +1,5 @@
 <?php
 require_once('functions.php');
-// защита от XSS
-function esc($str) {
-	$text = htmlspecialchars($str);
-	//$text = strip_tags($str);
-
-	return $text;
-}
 
 $is_auth = rand(0, 1);
 
@@ -15,8 +8,6 @@ $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 // массив категорий
 
 $categories_array = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
-
-
 
 // массив объявлений 
 
@@ -53,11 +44,7 @@ $list_array = [
         'url' => 'img/lot-6.jpg']
 ]
 ;
-// Функция для прайстега
-function price_tag ($number) {
-    $ceil_number = ceil($number);
-    return number_format( $ceil_number, 0,"." ," ") . " ₽";    
-}
+
 ?>
 
 <?php

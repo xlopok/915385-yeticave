@@ -27,7 +27,7 @@
         <?php 
         if($is_auth): ?>
           <div class='user-menu__logged'>
-             <p><?=$user_name?></p>
+             <p><?=htmlspecialchars($user_name)?></p>
             </div> 
             
        <?php else: ?>
