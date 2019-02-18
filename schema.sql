@@ -4,34 +4,51 @@ DEFAULT COLLATE utf8_general_ci;
 
 USE yeticave;
 
-create table categories (
-id int auto_increment primary key,
-category char(128) not null
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name CHAR(128) NOT NULL
 );
 
-create table lots (
-id int auto_increment primary key,
-dt_add timestamp default current_timestamp,
-name char(128) not null,
-description text,
-img text,
-starting_price decimal not null,
-dt_end timestamp, 
-bet_step int not null
+CREATE TABLE lots (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name CHAR(128) NOT NULL,
+    description TEXT,
+    img TEXT,
+    starting_price DECIMAL NOT NULL,
+    dt_end TIMESTAMP, 
+    bet_step INT NOT NULL,
+    author_id INT,
+    winner_user_id INT,
+    category_id INT
 );
 
-create table bets (
-id int auto_increment primary key,
-dt_add timestamp default current_timestamp,
-pricetag int not null);
+CREATE INDEX author_id ON lots(author_id);
+CREATE INDEX winner_user_id ON lots(winner_user_id);
+CREATE INDEX category_id ON lots(category_id);
 
-create table users (
-id int auto_increment primary key,
-registration_date timestamp default current_timestamp,
-email char(128) not null unique,
-user_name char(128) not null unique,
-passmord char(64) not null,
-avatar text,
-contacts text not null
-)
-;
+CREATE TABLE bets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pricetag INT NOT NULL,
+    user_id INT,
+    lot_id INT
+);
+
+CREATE INDEX user_id ON bets(user_id);
+CREATE INDEX lot_id ON bets(lot_id);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    email CHAR(128) NOT NULL UNIQUE,
+    user_name CHAR(128) NOT NULL,
+    password CHAR(64) NOT NULL,
+    avatar TEXT,
+    contacts TEXT NOT NULL,
+    created_lots INT,
+    bets_id INT
+);
+
+CREATE INDEX created_lots ON users(created_lots);
+CREATE INDEX bets_id ON users(bets_id);
