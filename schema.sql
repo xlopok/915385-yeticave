@@ -45,10 +45,5 @@ CREATE TABLE users (
     user_name CHAR(128) NOT NULL,
     password CHAR(64) NOT NULL,
     avatar TEXT,
-    contacts TEXT NOT NULL,
-    created_lots INT,
-    bets_id INT
+    contacts TEXT NOT NULL
 );
-
-CREATE INDEX created_lots ON users(created_lots);
-CREATE INDEX bets_id ON users(bets_id);
