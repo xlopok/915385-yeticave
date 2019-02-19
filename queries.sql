@@ -35,10 +35,12 @@ SELECT * FROM categories
 ;
 
 -- получить самые новые, открытые лоты. Каждый лот должен включать название, стартовую цену, ссылку на изображение, цену, название категории;
-SELECT l.name, starting_price, img, c.name 
+SELECT l.name, starting_price, img, b.pricetag, c.name 
 FROM lots l
 JOIN  categories c
-ON category_id = categories.id
+ON category_id = c.id
+JOIN bets b
+ON l.id = b.lot_id
 WHERE winner_user_id IS NULL
 ORDER BY l.dt_add DESC 
 ;
