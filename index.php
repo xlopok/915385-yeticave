@@ -1,4 +1,38 @@
 <?php
+// Подключение БД
+
+$link = mysqli_connect("localhost", "root", "", "yeticave");
+ 
+if ($link == false){
+    print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+}
+// else {
+//     print("Соединение установлено успешно");
+// };
+
+mysqli_set_charset($link, "utf8");
+// запрос на показ лотов
+$sql_lots = "SELECT l.lot_name, starting_price, img, c.category_name 
+FROM lots l
+JOIN  categories c
+ON category_id = c.id
+-- откинул цену из таблицы bets
+WHERE winner_user_id IS NULL
+ORDER BY l.dt_add DESC";
+
+$result_lots = mysqli_query($link, $sql_lots);
+
+$lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
+
+// запрос на показ категорий в футере
+$sql_footer_categories = "SELECT * FROM categories";
+
+$result_footer_categories = mysqli_query($link, $sql_footer_categories);
+
+$footer_categories_rows = mysqli_fetch_all($result_footer_categories, MYSQLI_ASSOC);
+
+
+// Подключение файла с функциями
 require_once('functions.php');
 
 $is_auth = rand(0, 1);
@@ -53,8 +87,8 @@ $list_array = [
 
 <?php
 
-$page_content = include_template('index.php', ['categories_array' => $categories_array, 'list_array' => $list_array] );
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Главная YetiCave', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_array' => $categories_array]);
+$page_content = include_template('index.php', ['categories_array' => $categories_array, 'list_array' => $list_array, 'lots_rows' => $lots_rows, 'footer_categories_rows' => $footer_categories_rows] );
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Главная YetiCave', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_array' => $categories_array, 'footer_categories_rows' => $footer_categories_rows]);
 
 print($layout_content);
 
