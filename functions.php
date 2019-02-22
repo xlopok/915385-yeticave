@@ -44,3 +44,16 @@ function time_for_lots() {
     $formatted_time = $hours . ":" . $minutes;
     return $formatted_time;
 }
+
+// Функция для БД - чтение категорий 
+
+function get_catagories() {
+    $categories_rows = [];
+
+    $sql_categories = "SELECT * FROM categories";
+
+    $result_categories = mysqli_query($link, $sql_categories);
+
+    $categories_rows = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
+    return $categories_rows;
+}

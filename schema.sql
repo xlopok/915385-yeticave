@@ -6,13 +6,13 @@ USE yeticave;
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    category_name CHAR(128) NOT NULL
+    name CHAR(128) NOT NULL
 );
 
 CREATE TABLE lots (
     id INT AUTO_INCREMENT PRIMARY KEY,
     dt_add TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    lot_name CHAR(128) NOT NULL,
+    name CHAR(128) NOT NULL,
     description TEXT,
     img TEXT,
     starting_price DECIMAL NOT NULL,

@@ -1,4 +1,4 @@
-INSERT INTO categories (category_name) 
+INSERT INTO categories (name) 
 VALUES 
     ('Доски и лыжи'), 
     ('Крепления'), 
@@ -14,7 +14,7 @@ VALUES
     ("alex188@mail.ru", "alexEnot", "unnknownEnot3", "alex188@mail.ru"),
     ("kendrick-lamar95@gmail.com", "aint-that-simple123", "12345", "same as my email yo");
 
-INSERT INTO lots (lot_name, description, starting_price, bet_step, author_id, winner_user_id, category_id, img, dt_end) 
+INSERT INTO lots (name, description, starting_price, bet_step, author_id, winner_user_id, category_id, img, dt_end) 
 VALUES
     ("2014 Rossignol District Snowboardа","Дешевая, но сердитая доска", 10999, 1000, 1, null, 1, "lot-1.jpg", "2020-01-01"),
     ("DC Ply Mens 2016/2017 Snowboardа","Дорогущая и быстрая как ламба", 159999, 5000, 2, null, 1, "lot-2.jpg", "2020-01-01"),
