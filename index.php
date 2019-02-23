@@ -14,10 +14,10 @@ mysqli_set_charset($link, "utf8"); // установка кодировки к �
 // Функции для показа лотов и категорий
 
 // Вызов функция для показа лотов 
-$lots_rows = get_lots($link, $sql_lots);
+$lots_rows = get_lots($link);
 
 // Вызов функция для показа категорий 
-$categories_rows = get_catagories($link, $sql_categories);
+$categories_rows = get_catagories($link);
 // var_dump($categories_rows);
 ?>
 

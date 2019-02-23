@@ -47,7 +47,7 @@ function time_for_lots() {
 
 // Функция для БД - чтение категорий 
 
-function get_catagories($link, $sql_categories) {
+function get_catagories($link) {
     $categories_rows = [];
 
     $sql_categories = "SELECT * FROM categories";
@@ -60,7 +60,7 @@ function get_catagories($link, $sql_categories) {
 
 // Функция для БД - чтение лотов
 
-function get_lots($link, $sql_lots) {
+function get_lots($link) {
     $lots_rows = [];
 
     $sql_lots = "SELECT l.name as lot_name, starting_price, img, c.name as category_name
