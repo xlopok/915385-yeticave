@@ -9,29 +9,16 @@ $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 // БД
 require_once('mysql_connect.php'); // Подключение к бд 
 
-mysqli_set_charset($link, "utf8");
-// запрос на показ лотов
-$sql_lots = "SELECT l.name as lot_name, starting_price, img, c.name as category_name
-FROM lots l
-JOIN  categories c
-ON category_id = c.id
--- откинул цену из таблицы bets
-WHERE winner_user_id IS NULL
-ORDER BY l.dt_add DESC";
+mysqli_set_charset($link, "utf8"); // установка кодировки к бд
 
-$result_lots = mysqli_query($link, $sql_lots);
+// Функции для показа лотов и категорий
 
-$lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
+// Вызов функция для показа лотов 
+$lots_rows = get_lots($link, $sql_categories);
 
-// запрос на показ категорий в футере
-$sql_categories = "SELECT * FROM categories";
-
-$result_categories = mysqli_query($link, $sql_categories);
-
-$categories_rows = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
-
-// get_catagories();
-
+// Вызов функция для показа категорий 
+$categories_rows = get_catagories($link, $sql_categories);
+// var_dump($categories_rows);
 ?>
 
 <?php
