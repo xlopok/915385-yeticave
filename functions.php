@@ -44,3 +44,35 @@ function time_for_lots() {
     $formatted_time = $hours . ":" . $minutes;
     return $formatted_time;
 }
+
+// Функция для БД - чтение категорий 
+
+function get_catagories($link) {
+    $categories_rows = [];
+
+    $sql_categories = "SELECT * FROM categories";
+
+    $result_categories = mysqli_query($link, $sql_categories);
+
+    $categories_rows = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
+    return $categories_rows;
+}
+
+// Функция для БД - чтение лотов
+
+function get_lots($link) {
+    $lots_rows = [];
+
+    $sql_lots = "SELECT l.name as lot_name, starting_price, img, c.name as category_name
+    FROM lots l
+    JOIN  categories c
+    ON category_id = c.id
+    -- откинул цену из таблицы bets
+    WHERE winner_user_id IS NULL
+    ORDER BY l.dt_add DESC";
+
+    $result_lots = mysqli_query($link, $sql_lots);
+
+    $lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
+    return $lots_rows;
+}
