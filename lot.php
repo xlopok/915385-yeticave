@@ -24,27 +24,48 @@ $categories_rows = get_catagories($link);
 <?php
 
 
-if (!isset($_GET['lot_id'])) {
-    die('<b>Отсутствует id лота в запросе или такого параметра нет</b>');
+// if (!isset($_GET['lot_id'])) {
+//     // die('<b>Отсутствует id лота в запросе или такого параметра нет</b>');
+//     // header("HTTP/1.0 404 Not Found");
+//     $page_content = include_template('404.php', [
+//         'error' => 'Такого лота нет'
+//     ]);
 
-} else {
-    $lot_id = $_GET['lot_id'];
+// } 
+// else {
+//     $lot_id = $_GET['lot_id'];
+// }
+
+// $lot = get_lot($link, $lot_id);
+// // var_dump($lot);
+// if (isset($lot)) {
+//     $page_content = include_template('lot.php', 
+//     ['lots_rows' => $lots_rows, 
+//     'categories_rows' => $categories_rows,
+//     'lot' => $lot] );
+// }
+if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
+
+     $lot_id = $_GET['lot_id']; 
+     $lot = get_lot($link, $lot_id);
+
+     if(isset($lot)) {
+        $page_content = include_template('lot.php', 
+            ['lots_rows' => $lots_rows, 
+            'categories_rows' => $categories_rows,
+            'lot' => $lot] );
+     }
+
+     else {
+        $page_content = include_template('404.php', 
+        ['error' => 'Такого лота нет'] );
+        
+     }
 }
-
-$lot = get_lot($link, $lot_id);
-// var_dump($lot);
-if (isset($lot)) {
-    $page_content = include_template('lot.php', 
-    ['lots_rows' => $lots_rows, 
-    'categories_rows' => $categories_rows,
-    'lot' => $lot] );
-} else {
-    header("HTTP/1.0 404 Not Found");
-    $page_content = include_template('404.php', [
-        'error' => 'Такого лота нет'
-    ]);
+else {
+    $page_content = include_template('404.php', 
+    ['error' => 'Такого лота нет'] );
 }
-
 
 
 
