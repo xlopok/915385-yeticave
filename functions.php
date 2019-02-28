@@ -63,7 +63,7 @@ function get_catagories($link) {
 function get_lots($link) {
     $lots_rows = [];
 
-    $sql_lots = "SELECT l.name as lot_name, starting_price, img, c.name as category_name
+    $sql_lots = "SELECT l.id ,l.name as lot_name, starting_price, img, c.name as category_name
     FROM lots l
     JOIN  categories c
     ON category_id = c.id
@@ -75,4 +75,20 @@ function get_lots($link) {
 
     $lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
     return $lots_rows;
+}
+
+function get_lot($link, $lot_id) {
+    $show_lot = [];
+
+    $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, c.name AS category 
+    FROM lots l 
+    JOIN categories c
+    ON l.category_id = c.id
+    WHERE l.id ='$lot_id';";
+
+    $result_lot = mysqli_query($link, $sql_lot);
+
+    $show_lot = mysqli_fetch_assoc($result_lot);
+
+    return $show_lot;
 }
