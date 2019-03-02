@@ -27,6 +27,3 @@ $page_content = include_template('index.php', ['lots_rows' => $lots_rows, 'categ
 $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Главная YetiCave', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);
-
-
-
