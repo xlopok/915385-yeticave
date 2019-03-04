@@ -45,6 +45,27 @@ function time_for_lots() {
     return $formatted_time;
 }
 
+/**
+* Проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
+* @param string $date строка с датой
+* @return bool
+*/
+function check_date_format($date) {
+   $result = false;
+   $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
+   if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
+       $result = checkdate($parts[2], $parts[1], $parts[3]);
+   }
+   return $result;
+}
+
+
+// Функция подключения страницы с ошибкой
+
+function show_error(&$content, $error) {
+    $page_content = include_template('404.php', ['error' => $error]);
+}
+
 // Функция для БД - чтение категорий 
 
 function get_catagories($link) {
