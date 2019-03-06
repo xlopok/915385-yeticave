@@ -29,23 +29,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
     $errors = []; // Массив с ошибками
 
     foreach ($required as $field) { // Проходим по массиву с обязательными полями и проверяем их на заполненность (не на пустоту)
-			if (empty($_POST[$field])) {  // Если путой, то добавляем ошибку 
+			if (empty($lot[$field])) {  // Если путой, то добавляем ошибку 
 							$errors[$field] = 'Это поле надо заполнить';
 			}
 		}
 
-		if (empty($_POST['lot-name'])) { //Проверка на пустоту имени лота
+		if (empty($lot['lot-name'])) { //Проверка на пустоту имени лота
 			$errors['lot-name'] = 'Введите наименование лота';
 		}
 
-		if (!is_numeric($_POST['category'])) { //Проверка дропдауна категорий
-			$errors['category'] = 'Выберите категорию-ошибка';
-
-			foreach($categories_rows as $categories_item) {
-				if ($_POST['category'] !== $categories_item['id']) {
-					$errors['category'] = 'Выберите категорию-ошибка';
-				}
-			}
+		if (!is_numeric($lot['category'])) { //Проверка дропдауна категорий
+			$errors['category'] = 'Выберите категорию';
 		}
 
 		// ПРОВЕРКА ФАЙЛА 
@@ -57,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 			$file_type = finfo_file($finfo, $tmp_name);
 			if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
 				$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';
-				var_dump($file_type);
+				
 			}
 			else {
 				move_uploaded_file($tmp_name, 'img/' . $path);
-				$lot['path'] = $path;
+				$lot['lot-photo'] = $path;
 			}
 		}
 		else {
@@ -70,37 +64,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 
 
 
-		if (empty($_POST['message'])) { //Проверка на пустоту описания
+		if (empty($lot['message'])) { //Проверка на пустоту описания
 			$errors['message'] = 'Напишите описание лота';
 		}
 
-		if ($_POST['lot-rate'] <= 0) { //Проверка стартинг прайса
+		if ($lot['lot-rate'] <= 0) { //Проверка стартинг прайса
 				$errors['lot-rate'] = 'Введите число больше нуля';
-
-				if(empty($_POST['lot-rate']) ) {
-					$errors['lot-rate'] = 'Введите начальную цену';
-				}
 		}
 
-		if ($_POST['lot-step'] <= 0) { // Проверка шага ставки 
+		if ($lot['lot-step'] <= 0) { // Проверка шага ставки 
 			$errors['lot-step'] = 'Введите число больше нуля';
-
-			if(empty($_POST['lot-step']) ) {
-				$errors['lot-step'] = 'Введите шаг ставки';
-			}
 		} 
 
-		
-
-		// if (empty($_POST['lot-date'])) {
-			
-		// 	$errors['lot-date'] = 'Введите дату окончания торгов';
-
-		// 	if (check_date_format($_POST['lot-date']) === false) { //Проверяем дату
-		// 		$errors['lot-date'] = 'Введите дату в формате «ДД.ММ.ГГГГ»';
-		// 	}
-		// }
-		if (empty($_POST['lot-date'])) { //Проверка даты
+	
+		if (empty($lot['lot-date'])) { //Проверка даты
 			$min_date = date_create('tomorrow + 1 day')->format('Y-m-d');
 			$end_date = date('Y-m-d', strtotime($data['lot-date']));
 			if ($end_date < $min_date) {
@@ -108,51 +85,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 			}
 	}
 		
-
-		
-
-
-
-    
-    // if (isset($_FILES['lot-photo']['name'])) {
-		// $tmp_name = $_FILES['lot-photo']['tmp_name'];
-		// $path = $_FILES['lot-photo']['name'];
-
-		// $finfo = finfo_open(FILEINFO_MIME_TYPE);
-		// $file_type = finfo_file($finfo, $tmp_name);
-		// if ($file_type !== "image/jpg" || $file_type !== "image/png" || $file_type !== "image/jpeg") {
-		// 	$errors['file'] = 'Загрузите картинку в формате GIF';
-		// }
-		// else {
-		// 	move_uploaded_file($tmp_name, 'img/' . $path);
-		// 	$lot['path'] = $path;
-		// }
-    // }
-    
-    // else {
-		// $errors['file'] = 'Вы не загрузили файл';
-    // }
-    
+    // ЕСЛИ ЕСТЬ ОШИБКИ В ФОРМЕ - СОХРАНЯЕМ ИХ И СНОВА ПОДКЛЮЧАЕМ ФОРМУ 
     if (count($errors)) {
-		$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'dict' => $dict, 'categories_rows' => $categories_rows]);
-		print_r($errors);
-		// var_dump($_POST['lot-name']);
-		// var_dump($_POST['category']);
-		// var_dump($_POST['lot-date']);
-		
-		// print_r($categories_rows);
-	
+		$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'dict' => $dict, 'categories_rows' => $categories_rows]);	
 		}
+		// ДОБАВЛЕНИЕ ЛОТА В БД ЕСЛИ ФОРМА ВАЛИДНА
+		else {
+			// СОЗДАЕМ ЗАПРОС В БД
+			$sql = 'INSERT INTO
+			 lots (
+				dt_add,
+			  name, 
+				description,
+				img,
+				starting_price, 
+				dt_end,
+				bet_step,
+				author_id, 
+				category_id) 
+			VALUES (
+				NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
 
-		else { // НУЖНО БУДЕТ ИЗМЕНИТЬ НА ПОКАЗ СТРАНИЦЫ СЛОТОМ -НЕТ ОШИБОК _СНОВА ПОКАЗ ФОРМЫ
-			$page_content = include_template('add.php', ['categories_rows' => $categories_rows]);
-			 
+			$stmt = db_get_prepare_stmt($link, $sql, 
+			[
+				$lot['lot-name'],
+				$lot['message'], 
+				$lot['lot-photo'], 
+				$lot['lot-rate'],
+				$lot['lot-date'], 
+				$lot['lot-step'],
+				$lot['category']
+			]);
+			$res = mysqli_stmt_execute($stmt);
+
+
+			// Перенаправляем польщователя на страницу созданного лота
+			if ($res) {
+				$lot_id = mysqli_insert_id($link);
+	
+				header("Location: lot.php?lot_id=" . $lot_id);
+			}
+	
+			else {
+				$page_content = include_template('404.php', 
+				['error' => 'Такого лота нет'] );
+			}
 		}
-    
-    // else {
-		// $page_content = include_template('lot.php', ['lot' => $lot]);
-    // }
-    
 }
 else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
 	$page_content = include_template('add.php', ['categories_rows' => $categories_rows]);
