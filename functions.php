@@ -45,6 +45,17 @@ function time_for_lots() {
     return $formatted_time;
 }
 
+// Время, которое останется до исчезновения лота
+function time_interval ($time_end) {
+    $time_now = strtotime('now');
+    $time_end = strtotime($time_end);
+    $interval = $time_end - $time_now;
+    $hours = floor($interval/3600);
+    $minutes = ceil(($interval - $hours*3600)/60);
+    $time_lots = $hours . ":" . $minutes;
+    return $time_lots;
+  }
+
 /**
 * Проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
 * @param string $date строка с датой
@@ -101,7 +112,7 @@ function get_lots($link) {
 function get_lot($link, $lot_id) {
     $show_lot = [];
 
-    $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, c.name AS category 
+    $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, l.bet_step, l.dt_end, c.name AS category 
     FROM lots l 
     JOIN categories c
     ON l.category_id = c.id
@@ -113,3 +124,86 @@ function get_lot($link, $lot_id) {
 
     return $show_lot;
 }
+
+function add_lot ($link, $lot) {
+    $sql = 'INSERT INTO
+    lots (
+       dt_add,
+     name, 
+       description,
+       img,
+       starting_price, 
+       dt_end,
+       bet_step,
+       author_id, 
+       category_id) 
+   VALUES (
+       NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
+
+   $stmt = db_get_prepare_stmt($link, $sql, 
+   [
+       $lot['lot-name'],
+       $lot['message'], 
+       $lot['lot-photo'], 
+       $lot['lot-rate'],
+       $lot['lot-date'], 
+       $lot['lot-step'],
+       $lot['category']
+   ]);
+   $res = mysqli_stmt_execute($stmt);
+   if ($res) {
+    $lot_id = mysqli_insert_id($link);
+
+    header("Location: lot.php?lot_id=" . $lot_id);
+}
+
+    else {
+        $page_content = include_template('404.php', 
+        ['error' => 'Такого лота нет'] );
+    }
+}
+
+/**
+ * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+ *
+ * @param $link mysqli Ресурс соединения
+ * @param $sql string SQL запрос с плейсхолдерами вместо значений
+ * @param array $data Данные для вставки на место плейсхолдеров
+ *
+ * @return mysqli_stmt Подготовленное выражение
+ */
+function db_get_prepare_stmt($link, $sql, $data = []) {
+    $stmt = mysqli_prepare($link, $sql);
+
+    if ($data) {
+        $types = '';
+        $stmt_data = [];
+
+        foreach ($data as $value) {
+            $type = null;
+
+            if (is_int($value)) {
+                $type = 'i';
+            }
+            else if (is_string($value)) {
+                $type = 's';
+            }
+            else if (is_double($value)) {
+                $type = 'd';
+            }
+
+            if ($type) {
+                $types .= $type;
+                $stmt_data[] = $value;
+            }
+        }
+
+        $values = array_merge([$stmt, $types], $stmt_data);
+
+        $func = 'mysqli_stmt_bind_param';
+        $func(...$values);
+    }
+
+    return $stmt;
+}
+

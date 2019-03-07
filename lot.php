@@ -27,7 +27,7 @@ if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
         $categories_rows = get_catagories($link);
 
         $page_content = include_template('lot.php', 
-            ['lots_rows' => $lots_rows, 
+            [
             'categories_rows' => $categories_rows,
             'lot' => $lot] );
      }
