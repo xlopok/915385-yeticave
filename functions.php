@@ -163,6 +163,50 @@ function add_lot ($link, $lot) {
     }
 }
 
+
+// ФУНКЦИЯ НА СТРАНИЦЕ ФОРМЫ - РЕГИСТРАЦИИ ЮЗЕРА, ДОБАВЛЯЕТ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
+
+function add_user ($link, $reg_form, $file_name) {
+    $password = password_hash($reg_form['password'], PASSWORD_DEFAULT);
+    if(!empty($_FILES['avatar']['name'])) {
+        $sql = 'INSERT INTO users (
+            registration_date,
+            email,
+            user_name,
+            password, 
+            avatar, 
+            contacts) VALUES (NOW(), ?, ?, ?, ?, ?)';
+        $stmt = db_get_prepare_stmt($link, $sql, [
+            $reg_form['email'],
+            $reg_form['name'],
+            $password, 
+            $reg_form['avatar'],
+            $reg_form['message'] ]);
+            $res = mysqli_stmt_execute($stmt);
+        }
+        else {
+            $sql = 'INSERT INTO users (
+                registration_date,
+                email,
+                user_name,
+                password, 
+                -- avatar, 
+                contacts) VALUES (NOW(), ?, ?, ?, ?)';
+            $stmt = db_get_prepare_stmt($link, $sql, [
+                $reg_form['email'],
+                $reg_form['name'],
+                $password, 
+                // $reg_form['avatar'],
+                $reg_form['message'] ]);
+                $res = mysqli_stmt_execute($stmt);
+
+        }
+        global $res;
+        return $res;
+}
+
+
+
 /**
  * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
  *
