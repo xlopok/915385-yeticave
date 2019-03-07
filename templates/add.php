@@ -50,7 +50,11 @@
         <textarea id="message" name="message" placeholder="Напишите описание лота" ><?= $value ;?></textarea>
         <span class="form__error"><?=$error_span;?></span>
       </div>
-      <div class="form__item form__item--file <?=$errors['lot-photo'] ? ' form__item--invalid' : ''; ?>"> <!-- form__item--uploaded -->
+      <?php $classname_div = isset($errors['lot-photo']) ? "form__item--invalid" : "";
+          // $value = isset($lot['message']) ? $lot['message'] : "";
+          $error_span= isset($errors['lot-photo']) ? $errors['lot-photo'] : "";
+       ?>
+      <div class="form__item form__item--file <?= $classname_div; ?>">   <!--form__item--uploaded -->
         <label>Изображение</label>
         <div class="preview">
           <button class="preview__remove" type="button">x</button>
@@ -59,10 +63,12 @@
           </div>
         </div>
         <div class="form__input-file">
+        
           <input class="visually-hidden" name="lot-photo" type="file" id="photo2" value="">
           <label for="photo2">
             <span>+ Добавить</span>
           </label>
+          <span class="form__error" style="width:400px; margin-top:-5px;"><?= $error_span;?></span>
         </div>
       </div>
       <div class="form__container-three">
@@ -90,7 +96,7 @@
        ?>
         <div class="form__item <?= $classname_div;?>">
           <label for="lot-date">Дата окончания торгов</label>
-          <input class="form__input-date" id="lot-date" type="date" name="lot-date" >
+          <input class="form__input-date" id="lot-date" type="date" name="lot-date" value="<?= $value;?>">
           <span class="form__error"><?=  $error_span;?></span>
         </div>
       </div>

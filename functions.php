@@ -125,6 +125,44 @@ function get_lot($link, $lot_id) {
     return $show_lot;
 }
 
+function add_lot ($link, $lot) {
+    $sql = 'INSERT INTO
+    lots (
+       dt_add,
+     name, 
+       description,
+       img,
+       starting_price, 
+       dt_end,
+       bet_step,
+       author_id, 
+       category_id) 
+   VALUES (
+       NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
+
+   $stmt = db_get_prepare_stmt($link, $sql, 
+   [
+       $lot['lot-name'],
+       $lot['message'], 
+       $lot['lot-photo'], 
+       $lot['lot-rate'],
+       $lot['lot-date'], 
+       $lot['lot-step'],
+       $lot['category']
+   ]);
+   $res = mysqli_stmt_execute($stmt);
+   if ($res) {
+    $lot_id = mysqli_insert_id($link);
+
+    header("Location: lot.php?lot_id=" . $lot_id);
+}
+
+    else {
+        $page_content = include_template('404.php', 
+        ['error' => 'Такого лота нет'] );
+    }
+}
+
 /**
  * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
  *

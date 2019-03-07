@@ -43,15 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 		}
 
 		// ПРОВЕРКА ФАЙЛА 
-		if (isset($_FILES['lot-photo']['name'])) {
+		if (!empty($_FILES['lot-photo']['name'])) {
 			$tmp_name = $_FILES['lot-photo']['tmp_name'];
 			$path = $_FILES['lot-photo']['name'];
 	
 			$finfo = finfo_open(FILEINFO_MIME_TYPE);
 			$file_type = finfo_file($finfo, $tmp_name);
 			if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
-				$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';
-				
+				$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';	
 			}
 			else {
 				move_uploaded_file($tmp_name, 'img/' . $path);
@@ -59,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 			}
 		}
 		else {
-			$errors['lot-photo'] = 'Вы не загрузили файл';
+			$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';
 		}
 
 
@@ -77,63 +76,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 		} 
 
 	
-		if (empty($lot['lot-date'])) { //Проверка даты
+		if (!empty($lot['lot-date'])) { //Проверка даты
 			$min_date = date_create('tomorrow + 1 day')->format('Y-m-d');
-			$end_date = date('Y-m-d', strtotime($data['lot-date']));
+			$end_date = date('Y-m-d', strtotime($lot['lot-date']));
+			$end = date('Y-m-d', strtotime("January 19, 2038"));
+			
 			if ($end_date < $min_date) {
 				$errors['lot-date'] = 'Дата не может быть меньше чем ' . date('d.m.Y', strtotime($min_date));
 			}
-	}
+
+			if ($end_date > $end ) {
+				$errors['lot-date'] = 'Дата не может быть больше 19 Января 2038'  ;
+			}
+		}
 		
     // ЕСЛИ ЕСТЬ ОШИБКИ В ФОРМЕ - СОХРАНЯЕМ ИХ И СНОВА ПОДКЛЮЧАЕМ ФОРМУ 
     if (count($errors)) {
 		$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'dict' => $dict, 'categories_rows' => $categories_rows]);	
+		// var_dump($errors);
+		// var_dump($lot);
 		}
 		// ДОБАВЛЕНИЕ ЛОТА В БД ЕСЛИ ФОРМА ВАЛИДНА
 		else {
-			// СОЗДАЕМ ЗАПРОС В БД
-			$sql = 'INSERT INTO
-			 lots (
-				dt_add,
-			  name, 
-				description,
-				img,
-				starting_price, 
-				dt_end,
-				bet_step,
-				author_id, 
-				category_id) 
-			VALUES (
-				NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
+			// СОЗДАЕМ ЗАПРОС В БД НА ДОБАВЛЕНИЕ НОВОГО ЛОТА
+			add_lot ($link, $lot);
 
-			$stmt = db_get_prepare_stmt($link, $sql, 
-			[
-				$lot['lot-name'],
-				$lot['message'], 
-				$lot['lot-photo'], 
-				$lot['lot-rate'],
-				$lot['lot-date'], 
-				$lot['lot-step'],
-				$lot['category']
-			]);
-			$res = mysqli_stmt_execute($stmt);
-
-
-			// Перенаправляем польщователя на страницу созданного лота
-			if ($res) {
-				$lot_id = mysqli_insert_id($link);
-	
-				header("Location: lot.php?lot_id=" . $lot_id);
-			}
-	
-			else {
-				$page_content = include_template('404.php', 
-				['error' => 'Такого лота нет'] );
-			}
 		}
 }
 else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
-	$page_content = include_template('add.php', ['categories_rows' => $categories_rows]);
+	$errors = [];
+	$page_content = include_template('add.php', ['categories_rows' => $categories_rows, 'errors' => $errors ]);
 	 
 }
     
