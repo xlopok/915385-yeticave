@@ -1,10 +1,7 @@
 <?php
 // Подключение файла с функциями
 require_once('functions.php');
-
-$is_auth = rand(0, 1);
-
-$user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
+session_start();
 
 // БД
 require_once('mysql_connect.php'); // Подключение к бд 
@@ -44,7 +41,17 @@ else {
 }
 
 
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+
+if (isset($_SESSION['user'])) {
+    
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
+
+}
+else {  
+    
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+}
+
 
 print($layout_content);
 

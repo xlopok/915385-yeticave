@@ -2,9 +2,9 @@
 // Подключение файла с функциями
 require_once('functions.php');
 
-$is_auth = rand(0, 1);
+// $is_auth = rand(0, 1);
 
-$user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
+// $user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
 
 // БД
 require_once('mysql_connect.php'); // Подключение к бд 
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // ПРОВЕРЯЕМ ИМЕЙЛ, УНИКАЛЕН ЛИ ОН
     
-    $errors['email']= unique_email($link, $reg_form, $errors);
+    $errors= unique_email($link, $reg_form, $errors);
 
     if (!empty($errors)) { // Если ошибки есть, то возвращаем их и показываем
     $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'reg_form' => $reg_form] );
@@ -66,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $res = add_user($link, $reg_form);
 
         if ($res && empty($errors)) {
-            // header("Location: /login.php"); //ОТПРАВИТЬ НА СТРАНИЦУ ВХОДА
-            // exit();
-            $page_content = include_template('login.php', ['categories_rows' => $categories_rows]);
+            header("Location: /login.php"); //ОТПРАВИТЬ НА СТРАНИЦУ ВХОДА
+            exit();
+            // $page_content = include_template('login.php', ['categories_rows' => $categories_rows]);
         }
         else {
             $page_content = include_template('404.php', 
@@ -79,16 +79,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
-	$errors = [];
-	$page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors ]);
+    $errors = [];
+
+    if (isset($_SESSION['user'])) {
+        $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+        $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
+
+    }
+    else {
+        $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+        $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+    }
+    
+	    // $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors ]);
 	 
 }
 
+if (isset($_SESSION['user'])) {
+    // $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
 
+}
+else {
+    // $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+}
 
-
-
-
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+        // $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);

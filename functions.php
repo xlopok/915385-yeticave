@@ -195,7 +195,7 @@ function unique_email($link, $reg_form, $errors) {
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
     }
 
-    return $errors['email'];
+    return $errors;
 }
 
 

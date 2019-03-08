@@ -1,10 +1,7 @@
 <?php
 // Подключение файла с функциями
 require_once('functions.php');
-
-$is_auth = rand(0, 1);
-
-$user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
+session_start();
 
 // БД
 require_once('mysql_connect.php'); // Подключение к бд 
@@ -93,8 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
     // ЕСЛИ ЕСТЬ ОШИБКИ В ФОРМЕ - СОХРАНЯЕМ ИХ И СНОВА ПОДКЛЮЧАЕМ ФОРМУ 
     if (count($errors)) {
 		$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'dict' => $dict, 'categories_rows' => $categories_rows]);	
-		// var_dump($errors);
-		// var_dump($lot);
 		}
 		// ДОБАВЛЕНИЕ ЛОТА В БД ЕСЛИ ФОРМА ВАЛИДНА
 		else {
@@ -102,20 +97,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 			add_lot ($link, $lot);
 
 		}
+
+
+		if (isset($_SESSION['user'])) {
+			$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
+	
+		}
+		else {
+			$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'ОШИБКА', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+		}
+
 }
 else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
 	$errors = [];
-	$page_content = include_template('add.php', ['categories_rows' => $categories_rows, 'errors' => $errors ]);
-	 
+
+	if (isset($_SESSION['user'])) {
+		$page_content = include_template('add.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+		$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
+
+	}
+	else {
+		http_response_code(404);
+			$page_content = include_template('404.php', ['categories_rows' => $categories_rows,'errors' => $errors, 'error' => 'ВОЙДИТЕ НА САЙТ']);
+			$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'ОШИБКА', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+	}
+
 }
-    
-
-
-
-
-
-// $page_content = include_template('add.php', ['categories_rows' => $categories_rows] );
-
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);
