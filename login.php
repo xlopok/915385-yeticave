@@ -34,23 +34,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛ�
 
 
     $email = mysqli_real_escape_string($link, $login_form['email']);
-	$sql = "SELECT * FROM users WHERE email = '$email'";
-	$res = mysqli_query($link, $sql);
+    $sql = "SELECT * FROM users WHERE email = '$email'";
+    $res = mysqli_query($link, $sql);
 
     $user = $res ? mysqli_fetch_array($res, MYSQLI_ASSOC) : null;
 
     
 
     if (!count($errors) and $user) { // ЕСЛИ В ВАЛИДАЦИИ ОШИБОК НЕТ И ЕСТЬ РЕСУРС СОЕДИНЕНИЯ, ТО ПРОВЕРЯЕМ ВВЕДЕННЫЙ ПАРОЛЬ С ПАРОЛЕМ ИЗ БД
-		if (password_verify($login_form['password'], $user['password'])) {
-			$_SESSION['user'] = $user;  // Если пароли совпадают, то открываем сессию и передаем данные польщователся
+        if (password_verify($login_form['password'], $user['password'])) {
+            $_SESSION['user'] = $user;  // Если пароли совпадают, то открываем сессию и передаем данные польщователся
         }
         else { // Если ХЭШИ паролей не совпадают, то ошибка
-			$errors['password'] = 'Вы ввели неверный пароль';
-		}
+            $errors['password'] = 'Вы ввели неверный пароль';
+        }
     }
     else {
-		$errors['email'] = 'Такой пользователь не найден';
+        $errors['email'] = 'Такой пользователь не найден';
     }
     
     if (count($errors)) { // ЕСТЬ ОШИБКИ В ФОРМЕ - СОХРАНЯЕМ И ПОКАЗЫВАЕМ
@@ -58,37 +58,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛ�
     }
     
     else {
-		header("Location: /");
-		exit();
-	}
-
-   
-    if (isset($_SESSION['user'])) {
-        $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
-
+        header("Location: /");
+        exit();
     }
-    else {
-         $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
-    }
-
-    
-
 
 }
 
 else { // ФОРМА ОТПРАВЛЕНА НЕ БЫЛА 
     $errors = [];
+    $page_content = include_template('login.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+} 
 
-    if (isset($_SESSION['user'])) {
-        $page_content = include_template('login.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
+
+if (isset($_SESSION['user'])) {
         $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
 
     }
-    else {
-        $page_content = include_template('login.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
-        $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
-    }
-
+else {
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
 }
+
+
 
 print($layout_content);
