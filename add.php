@@ -10,28 +10,27 @@ mysqli_set_charset($link, "utf8"); // установка кодировки к �
 
 
 if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШИБКА
-    $error = mysqli_connect_error();
-    show_error($page_content, $error);
-}
-else {
-    $categories_rows = get_catagories($link); // Есть ресурс соединения - передаем список категорий
+	$error = mysqli_connect_error();
+	show_error($page_content, $error);
+	exit();
 }
 
+$categories_rows = get_catagories($link); // Передаем список категорий
+
 $errors = [];
+$user_name = $_SESSION['user']['user_name'] ?? "";
+$is_auth = $_SESSION['user']?? "";
 
 if(!isset($_SESSION['user'])) { // ЮЗЕР НЕ АВТОРИЗОВАН - СТРАНИЦА ДОБАВЛЕНИЯ НЕ ДОСТУПНА (ОШИБКА)
 	http_response_code(404);
-	$page_content = include_template('404.php', ['categories_rows' => $categories_rows,'errors' => $errors, 'error' => 'ВОЙДИТЕ НА САЙТ']);
-	$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'ОШИБКА', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
+	$page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
 }
 else { // ЕСЛИ ЛОГИН АВТОРИЗОВАН
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ ОТПРАВЛЕНА ФОРМА
-		$lot = $_POST;
+			$lot = $_POST;
 
-			$required = ['lot-name', 'category', 'message', 
-			'lot-rate', 'lot-step', 'lot-date']; //Обязательные для заполнения поля
-			$dict = ['lot-name' => 'Введите название лота', 'message' => 'Описание лота', 'lot-photo' => 'Изображение товара', 'lot-rate' => 'Начальная цена', 'lot-step' => 'Шаг ставки', 'lot-date' => 'Дата окончания торгов']; //Описание полей (не пригодились)
+			$required = ['lot-name', 'category', 'message', 'lot-rate', 'lot-step', 'lot-date']; //Обязательные для заполнения поля
 			$errors = []; // Массив с ошибками
 
 			foreach ($required as $field) { // Проходим по массиву с обязательными полями и проверяем их на заполненность (не на пустоту)
@@ -67,8 +66,6 @@ else { // ЕСЛИ ЛОГИН АВТОРИЗОВАН
 				$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';
 			}
 
-
-
 			if (empty($lot['message'])) { //Проверка на пустоту описания
 				$errors['message'] = 'Напишите описание лота';
 			}
@@ -81,7 +78,6 @@ else { // ЕСЛИ ЛОГИН АВТОРИЗОВАН
 				$errors['lot-step'] = 'Введите число больше нуля';
 			} 
 
-		
 			if (!empty($lot['lot-date'])) { //Проверка даты
 				$min_date = date_create('tomorrow + 1 day')->format('Y-m-d');
 				$end_date = date('Y-m-d', strtotime($lot['lot-date']));
@@ -98,7 +94,7 @@ else { // ЕСЛИ ЛОГИН АВТОРИЗОВАН
 			
 			// ЕСЛИ ЕСТЬ ОШИБКИ В ФОРМЕ - СОХРАНЯЕМ ИХ И СНОВА ПОДКЛЮЧАЕМ ФОРМУ 
 			if (count($errors)) {
-			$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'dict' => $dict, 'categories_rows' => $categories_rows]);	
+			$page_content = include_template('add.php', ['lot' => $lot, 'errors' => $errors, 'categories_rows' => $categories_rows]);	
 			}
 			// ДОБАВЛЕНИЕ ЛОТА В БД ЕСЛИ ФОРМА ВАЛИДНА
 			else {
@@ -107,14 +103,12 @@ else { // ЕСЛИ ЛОГИН АВТОРИЗОВАН
 
 			}
 	}
-	
-	else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
-		$errors = [];
 
+	else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
 		$page_content = include_template('add.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
 	}
-
-	$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
 }
+
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);

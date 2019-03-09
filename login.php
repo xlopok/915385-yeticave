@@ -17,7 +17,7 @@ if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШ
     exit();
 }
 
-$categories_rows = get_catagories($link); // Есть ресурс соединения - передаем список категорий
+$categories_rows = get_catagories($link); // Передаем список категорий
 
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛЕНА
@@ -69,14 +69,9 @@ else { // ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
     $page_content = include_template('login.php', ['categories_rows' => $categories_rows,'errors' => $errors]);
 } 
 
-
-if (isset($_SESSION['user'])) {
-        $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => $_SESSION['user']['user_name'], 'is_auth' => $_SESSION['user'], 'categories_rows' => $categories_rows]);
-
-    }
-else {
-    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => null, 'is_auth' => null, 'categories_rows' => $categories_rows]);
-}
+$user_name = $_SESSION['user']['user_name'] ?? "";
+$is_auth = $_SESSION['user']?? "";
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 
 
