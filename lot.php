@@ -8,6 +8,9 @@ require_once('mysql_connect.php'); // Подключение к бд
 
 mysqli_set_charset($link, "utf8"); // установка кодировки к бд
 
+$user_name = $_SESSION['user']['user_name'] ?? "";
+$is_auth = $_SESSION['user']?? "";
+
 // Условие для параметра запроса и отображение нужногоа лота по его id
 
 if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
@@ -35,8 +38,6 @@ else {
     ['error' => 'Такого лота нет'] );
 }
 
-$user_name = $_SESSION['user']['user_name'] ?? "";
-$is_auth = $_SESSION['user']?? "";
 $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);

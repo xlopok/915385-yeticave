@@ -38,7 +38,7 @@
                 Мин. ставка <span><?=price_tag($min_bet);?></span>
               </div>
             </div>
-            <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
+            <form class="lot-item__form" action="../lot.php?lot_id=<?= ($lot['id'])?>"  method="post">
               <p class="lot-item__form-item form__item form__item--invalid">
                 <label for="cost">Ваша ставка</label>
                 <input id="cost" type="text" name="cost" placeholder="<?=price_tag($min_bet);?>">

@@ -138,7 +138,7 @@ function add_lot ($link, $lot) {
        author_id, 
        category_id) 
    VALUES (
-       NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
+       NOW(),?, ?, ?, ?, ?, ?, ?, ?)';
 
    $stmt = db_get_prepare_stmt($link, $sql, 
    [
@@ -148,6 +148,7 @@ function add_lot ($link, $lot) {
        $lot['lot-rate'],
        $lot['lot-date'], 
        $lot['lot-step'],
+       $_SESSION['user']['id'],
        $lot['category']
    ]);
    $res = mysqli_stmt_execute($stmt);
@@ -186,11 +187,11 @@ function add_user ($link, $reg_form) {
         return $res;     
 }
 
-function unique_email($link, $reg_form, $errors) {
+function unique_email_give_id($link, $reg_form, $errors) {
     $email = mysqli_real_escape_string($link, $reg_form['email']);
     $sql = "SELECT id FROM users WHERE email = '$email'";
     $res = mysqli_query($link, $sql);
-    
+  
     if (mysqli_num_rows($res) > 0) { 
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
     }
@@ -198,6 +199,14 @@ function unique_email($link, $reg_form, $errors) {
     return $errors;
 }
 
+
+function unique_email_give_all($link, $login_form, $errors) {
+    $email = mysqli_real_escape_string($link, $login_form['email']);
+    $sql = "SELECT * FROM users WHERE email = '$email'";
+    $res = mysqli_query($link, $sql);
+  
+    return $res;
+}
 
 /**
  * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
