@@ -138,7 +138,7 @@ function add_lot ($link, $lot) {
        author_id, 
        category_id) 
    VALUES (
-       NOW(),?, ?, ?, ?, ?, ?, 1, ?)';
+       NOW(),?, ?, ?, ?, ?, ?, ?, ?)';
 
    $stmt = db_get_prepare_stmt($link, $sql, 
    [
@@ -148,6 +148,7 @@ function add_lot ($link, $lot) {
        $lot['lot-rate'],
        $lot['lot-date'], 
        $lot['lot-step'],
+       $_SESSION['user']['id'],
        $lot['category']
    ]);
    $res = mysqli_stmt_execute($stmt);
@@ -161,6 +162,50 @@ function add_lot ($link, $lot) {
         $page_content = include_template('404.php', 
         ['error' => 'Такого лота нет'] );
     }
+}
+
+
+// ФУНКЦИЯ НА СТРАНИЦЕ ФОРМЫ - РЕГИСТРАЦИИ ЮЗЕРА, ДОБАВЛЯЕТ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
+
+function add_user ($link, $reg_form) {
+    $password = password_hash($reg_form['password'], PASSWORD_DEFAULT);
+
+    $sql = 'INSERT INTO users (
+        registration_date,
+        email,
+        user_name,
+        password, 
+        avatar, 
+        contacts) VALUES (NOW(), ?, ?, ?, ?, ?)';
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $reg_form['email'],
+        $reg_form['name'],
+        $password, 
+        $reg_form['avatar'],
+        $reg_form['message'] ]);
+        $res = mysqli_stmt_execute($stmt);
+        return $res;     
+}
+
+function unique_email_give_id($link, $reg_form, $errors) {
+    $email = mysqli_real_escape_string($link, $reg_form['email']);
+    $sql = "SELECT id FROM users WHERE email = '$email'";
+    $res = mysqli_query($link, $sql);
+  
+    if (mysqli_num_rows($res) > 0) { 
+        $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
+    }
+
+    return $errors;
+}
+
+
+function unique_email_give_all($link, $login_form, $errors) {
+    $email = mysqli_real_escape_string($link, $login_form['email']);
+    $sql = "SELECT * FROM users WHERE email = '$email'";
+    $res = mysqli_query($link, $sql);
+  
+    return $res;
 }
 
 /**

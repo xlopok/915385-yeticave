@@ -19,6 +19,10 @@
           <p class="lot-item__description"><?= $lot['description']; ?></p>
         </div>
         <div class="lot-item__right">
+
+        <!-- СКРЫТЬ ДЛЯ НЕЗАРЕГИСТРИРОВАННЫХ ЮЗЕРОВ -->
+        <?php
+        if(isset($_SESSION['user'])): ?>
           <div class="lot-item__state">
             <div class="lot-item__timer timer">
             <?= time_interval($lot['dt_end']); ?>
@@ -34,7 +38,7 @@
                 Мин. ставка <span><?=price_tag($min_bet);?></span>
               </div>
             </div>
-            <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
+            <form class="lot-item__form" action="../lot.php?lot_id=<?= ($lot['id'])?>"  method="post">
               <p class="lot-item__form-item form__item form__item--invalid">
                 <label for="cost">Ваша ставка</label>
                 <input id="cost" type="text" name="cost" placeholder="<?=price_tag($min_bet);?>">
@@ -43,6 +47,11 @@
               <button type="submit" class="button">Сделать ставку</button>
             </form>
           </div>
+          <?php else: ?>
+          <?php endif; ?>
+
+              <!-- БЛОК ВЫШЕ СКРЫТ ДЛЯ НЕАВТОРИЗИРОВАННЫХ ЮЗЕРОВ -->
+
           <div class="history">
             <h3>История ставок (<span>10</span>)</h3>
             <table class="history__list">
