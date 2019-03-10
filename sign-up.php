@@ -1,10 +1,7 @@
 <?php
 // Подключение файла с функциями
 require_once('functions.php');
-
-$is_auth = rand(0, 1);
-
-$user_name = 'Nikita Vorobev'; // укажите здесь ваше имя
+session_start();
 
 // БД
 require_once('mysql_connect.php'); // Подключение к бд 
@@ -14,15 +11,18 @@ mysqli_set_charset($link, "utf8"); // установка кодировки к �
 if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШИБКА
     $error = mysqli_connect_error();
     show_error($page_content, $error);
-}
-else {
-    $categories_rows = get_catagories($link); // Есть ресурс соединения - передаем список категорий
+    exit();
 }
 
+$categories_rows = get_catagories($link); // Передаем список категорий
+
+$user_name = $_SESSION['user']['user_name'] ?? "";
+$is_auth = $_SESSION['user']?? "";
+
+$reg_form = $_POST;
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $reg_form = $_POST;
-    $errors = [];
 
     $req_fields = ['email', 'password', 'name', 'message'];
 
@@ -52,43 +52,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $reg_form['avatar'] = '';
     }
 
-
     // ПРОВЕРЯЕМ ИМЕЙЛ, УНИКАЛЕН ЛИ ОН
     
-    $errors['email']= unique_email($link, $reg_form, $errors);
+    $errors= unique_email_give_id($link, $reg_form, $errors);
 
-    if (!empty($errors)) { // Если ошибки есть, то возвращаем их и показываем
-    $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'reg_form' => $reg_form] );
-    }
-
-    else { 
-
+    if (!count($errors)) { // ОШИБОК НЕТ - ДОБАВЛЯКМ ЮЗЕРА
         $res = add_user($link, $reg_form);
 
         if ($res && empty($errors)) {
-            // header("Location: /login.php"); //ОТПРАВИТЬ НА СТРАНИЦУ ВХОДА
-            // exit();
-            $page_content = include_template('login.php', ['categories_rows' => $categories_rows]);
+            header("Location: /login.php"); //ОТПРАВИТЬ НА СТРАНИЦУ ВХОДА
+            exit();
         }
         else {
             $page_content = include_template('404.php', 
             ['error' => 'Такого лота нет'] );
         }
     }
-
 }
 
-else { // ЕСЛИ ФОРМА ОТПРАВЛЕНА НЕ БЫЛА
-	$errors = [];
-	$page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors ]);
-	 
-}
-
-
-
-
-
-
+$page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'reg_form' => $reg_form] );
 $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+
+
 
 print($layout_content);
