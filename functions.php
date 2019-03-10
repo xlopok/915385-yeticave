@@ -112,10 +112,12 @@ function get_lots($link) {
 function get_lot($link, $lot_id) {
     $show_lot = [];
 
-    $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, l.bet_step, l.dt_end, c.name AS category 
+    $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, l.bet_step, l.dt_end, l.author_id, c.name AS category, MAX(b.pricetag) as max_bet 
     FROM lots l 
     JOIN categories c
     ON l.category_id = c.id
+    JOIN bets b
+    ON b.lot_id = l.id 
     WHERE l.id ='$lot_id';";
 
     $result_lot = mysqli_query($link, $sql_lot);
@@ -124,6 +126,31 @@ function get_lot($link, $lot_id) {
 
     return $show_lot;
 }
+
+// Получаем список ставок для конкретного лота на странице этого лота
+
+function get_bets_for_lot($link, $lot_id) {
+    $show_bets = [];
+
+    $sql = "SELECT l.id, u.user_name, b.pricetag, b.dt_add 
+    FROM lots l
+    JOIN bets b
+    ON l.id = b.lot_id
+    JOIN users u
+    ON u.id = b.user_id
+    WHERE l.id ='$lot_id'
+    ORDER BY b.dt_add DESC
+    LIMIT 10";
+    
+    $result_bets = mysqli_query($link, $sql);
+
+    $show_bets = mysqli_fetch_all($result_bets, MYSQLI_ASSOC);
+
+    return $show_bets;
+
+}
+
+// Добавляем лот
 
 function add_lot ($link, $lot) {
     $sql = 'INSERT INTO
@@ -156,7 +183,7 @@ function add_lot ($link, $lot) {
     $lot_id = mysqli_insert_id($link);
 
     header("Location: lot.php?lot_id=" . $lot_id);
-}
+    }
 
     else {
         $page_content = include_template('404.php', 
@@ -164,6 +191,24 @@ function add_lot ($link, $lot) {
     }
 }
 
+
+// Добавим ставку в таблицу ставок на странице лота 
+
+function add_bet($link, $lot, $bet) {
+    $sql = 'INSERT INTO bets (dt_add, pricetag, user_id, lot_id) 
+    VALUES (NOW(), ?, ?, ?)';
+
+    $stmt = db_get_prepare_stmt($link, $sql, 
+   [
+    $bet,
+    $_SESSION['user']['id'],
+    $lot['id']
+   ]);
+
+    $res = mysqli_stmt_execute($stmt);
+
+    return $res;
+}
 
 // ФУНКЦИЯ НА СТРАНИЦЕ ФОРМЫ - РЕГИСТРАЦИИ ЮЗЕРА, ДОБАВЛЯЕТ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
 
