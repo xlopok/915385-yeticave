@@ -8,7 +8,6 @@ require_once('mysql_connect.php'); // Подключение к бд
 
 mysqli_set_charset($link, "utf8"); // установка кодировки к бд
 
-// Функции для показа лотов и категорий
 
 // Вызов функция для показа лотов 
 $lots_rows = get_lots($link);
