@@ -23,7 +23,7 @@ $errors = []; //МАССИВ С ОШИБКАМИ
 
 if(!$is_auth) { // ЮЗЕР НЕ АВТОРИЗОВАН - СТРАНИЦА ДОБАВЛЕНИЯ НЕ ДОСТУПНА (ОШИБКА)
 	http_response_code(403);
-	$page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
+	$page_content = include_template('403.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
 	$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 	print($layout_content);
 	exit();

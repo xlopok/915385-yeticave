@@ -41,10 +41,10 @@
             <?php 
             $bet_2ndtime = false; 
             foreach($bets as $bet) {
-              if($bet['user_id'] === $is_auth['id']) { 
+              if($is_auth) {if($bet['user_id'] === $is_auth['id']) { 
                 $bet_2ndtime=true;
               } 
-            };?>
+            }};?>
             <?php
               if(isset($_SESSION['user'])  && $is_auth['id'] != $lot['author_id'] && strtotime(($lot['dt_end'])) > strtotime('now')  && !$bet_2ndtime ): ?>
             <form class="lot-item__form" action="../lot.php?lot_id=<?= ($lot['id'])?>"  method="post">

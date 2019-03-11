@@ -28,7 +28,7 @@ if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
 if(is_null($lot) || !isset($lot['id'])) {
     http_response_code(404);
     $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
-    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
     print($layout_content);
     exit();
 }
