@@ -16,7 +16,6 @@ if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШ
 
 $categories_rows = get_catagories($link); // Передаем список категорий
 
-$user_name = $_SESSION['user']['user_name'] ?? "";
 $is_auth = $_SESSION['user']?? "";
 
 $reg_form = $_POST;
@@ -52,9 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $reg_form['avatar'] = '';
     }
 
+    // Проверяем формат имейла
+    if(!filter_var($reg_form['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Введите валидный имейл в формате name@mail.com';
+    }
+
     // ПРОВЕРЯЕМ ИМЕЙЛ, УНИКАЛЕН ЛИ ОН
-    
-    $errors= unique_email_give_id($link, $reg_form, $errors);
+    $unique_email = unique_email_give_all($link, $reg_form, $errors);
+
+    if (mysqli_num_rows($unique_email) > 0) { 
+        $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
+    }
 
     if (!count($errors)) { // ОШИБОК НЕТ - ДОБАВЛЯКМ ЮЗЕРА
         $res = add_user($link, $reg_form);
@@ -71,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'reg_form' => $reg_form] );
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 
 

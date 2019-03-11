@@ -1,6 +1,6 @@
 <?php
 
-
+// Подключает теймплейт, принимает имя темплейта и массив с данными
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -20,32 +20,13 @@ function include_template($name, $data) {
 }
 
 
-// Функция для прайстега
+// Функция для прайстега - принимает сумму товара, преобразует ее в формат с разделителем и знаком рубля
 function price_tag ($number) {
     $ceil_number = ceil($number);
     return number_format( $ceil_number, 0,"." ," ") . " ₽";    
 }
 
-
-// Функция для оставшегося времени лотов до удаления со страницы 
-
-function time_for_lots() {
-    date_default_timezone_set("Europe/Moscow");
-    
-    $tomorrow_midnight = strtotime("tomorrow 24:00"); //полуночь след дня
-    
-    $current_time = time(); // текущее время 
-    
-    $secs_to_midnight = $tomorrow_midnight - $current_time ; // останется времени до полуночи след дня
-    
-    $hours = floor($secs_to_midnight / 3600);
-    $minutes = floor(($secs_to_midnight % 3600) / 60);
-    
-    $formatted_time = $hours . ":" . $minutes;
-    return $formatted_time;
-}
-
-// Время, которое останется до исчезновения лота
+// Время, которое останется до исчезновения лота - принимет время окончания торгов для лота и выдает его в формате ЧЧ:ММ
 function time_interval ($time_end) {
     $time_now = strtotime('now');
     $time_end = strtotime($time_end);
@@ -95,11 +76,10 @@ function get_catagories($link) {
 function get_lots($link) {
     $lots_rows = [];
 
-    $sql_lots = "SELECT l.id ,l.name as lot_name, starting_price, img, c.name as category_name
+    $sql_lots = "SELECT l.id ,l.name as lot_name, starting_price, l.dt_end, img, c.name as category_name
     FROM lots l
     JOIN  categories c
     ON category_id = c.id
-    -- откинул цену из таблицы bets
     WHERE winner_user_id IS NULL
     ORDER BY l.dt_add DESC";
 
@@ -132,7 +112,7 @@ function get_lot($link, $lot_id) {
 function get_bets_for_lot($link, $lot_id) {
     $show_bets = [];
 
-    $sql = "SELECT l.id, u.user_name, b.pricetag, b.dt_add 
+    $sql = "SELECT l.id, u.user_name, b.pricetag, b.user_id ,b.dt_add 
     FROM lots l
     JOIN bets b
     ON l.id = b.lot_id
@@ -152,58 +132,38 @@ function get_bets_for_lot($link, $lot_id) {
 
 // Добавляем лот
 
-function add_lot ($link, $lot) {
-    $sql = 'INSERT INTO
-    lots (
-       dt_add,
-     name, 
-       description,
-       img,
-       starting_price, 
-       dt_end,
-       bet_step,
-       author_id, 
-       category_id) 
-   VALUES (
-       NOW(),?, ?, ?, ?, ?, ?, ?, ?)';
+function add_lot ($link, $lot, $is_auth) {
+    $sql = 'INSERT INTO lots (dt_add, name, description, img, starting_price, dt_end, bet_step, author_id, category_id) 
+    VALUES (NOW(),?, ?, ?, ?, ?, ?, ?, ?)';
 
-   $stmt = db_get_prepare_stmt($link, $sql, 
-   [
-       $lot['lot-name'],
-       $lot['message'], 
-       $lot['lot-photo'], 
-       $lot['lot-rate'],
-       $lot['lot-date'], 
-       $lot['lot-step'],
-       $_SESSION['user']['id'],
-       $lot['category']
-   ]);
+    $stmt = db_get_prepare_stmt($link, $sql,  
+        [
+        $lot['lot-name'],
+        $lot['message'], 
+        $lot['lot-photo'], 
+        $lot['lot-rate'],
+        $lot['lot-date'], 
+        $lot['lot-step'],
+        $is_auth['id'],
+        $lot['category']
+        ]);
    $res = mysqli_stmt_execute($stmt);
-   if ($res) {
-    $lot_id = mysqli_insert_id($link);
-
-    header("Location: lot.php?lot_id=" . $lot_id);
-    }
-
-    else {
-        $page_content = include_template('404.php', 
-        ['error' => 'Такого лота нет'] );
-    }
+   return $res;
 }
 
 
 // Добавим ставку в таблицу ставок на странице лота 
 
-function add_bet($link, $lot, $bet) {
+function add_bet($link, $lot, $bet, $is_auth) {
     $sql = 'INSERT INTO bets (dt_add, pricetag, user_id, lot_id) 
     VALUES (NOW(), ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($link, $sql, 
-   [
-    $bet,
-    $_SESSION['user']['id'],
-    $lot['id']
-   ]);
+        [
+        $bet,
+        $is_auth['id'],
+        $lot['id']
+        ]);
 
     $res = mysqli_stmt_execute($stmt);
 
@@ -215,36 +175,23 @@ function add_bet($link, $lot, $bet) {
 function add_user ($link, $reg_form) {
     $password = password_hash($reg_form['password'], PASSWORD_DEFAULT);
 
-    $sql = 'INSERT INTO users (
-        registration_date,
-        email,
-        user_name,
-        password, 
-        avatar, 
-        contacts) VALUES (NOW(), ?, ?, ?, ?, ?)';
-    $stmt = db_get_prepare_stmt($link, $sql, [
+    $sql = 'INSERT INTO users (registration_date, email, user_name, password, avatar, contacts) 
+    VALUES (NOW(), ?, ?, ?, ?, ?)';
+    $stmt = db_get_prepare_stmt($link, $sql, 
+        [
         $reg_form['email'],
         $reg_form['name'],
         $password, 
         $reg_form['avatar'],
-        $reg_form['message'] ]);
-        $res = mysqli_stmt_execute($stmt);
-        return $res;     
+        $reg_form['message'] 
+        ]);
+
+    $res = mysqli_stmt_execute($stmt);
+
+    return $res;     
 }
 
-function unique_email_give_id($link, $reg_form, $errors) {
-    $email = mysqli_real_escape_string($link, $reg_form['email']);
-    $sql = "SELECT id FROM users WHERE email = '$email'";
-    $res = mysqli_query($link, $sql);
-  
-    if (mysqli_num_rows($res) > 0) { 
-        $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
-    }
-
-    return $errors;
-}
-
-
+// Проверяем имейл на уникальность 
 function unique_email_give_all($link, $login_form, $errors) {
     $email = mysqli_real_escape_string($link, $login_form['email']);
     $sql = "SELECT * FROM users WHERE email = '$email'";

@@ -16,7 +16,6 @@ if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШ
 
 $categories_rows = get_catagories($link); // Передаем список категорий
 
-$user_name = $_SESSION['user']['user_name'] ?? "";
 $is_auth = $_SESSION['user']?? "";
 
 $login_form = $_POST;
@@ -55,7 +54,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛ�
 }
 
 $page_content = include_template('login.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'login_form' =>$login_form  ]);
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 
 

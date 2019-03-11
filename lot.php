@@ -8,7 +8,6 @@ require_once('mysql_connect.php'); // Подключение к бд
 
 mysqli_set_charset($link, "utf8"); // установка кодировки к бд
 
-$user_name = $_SESSION['user']['user_name'] ?? "";
 $is_auth = $_SESSION['user']?? "";
 
 $error['bet'] = null;
@@ -23,22 +22,15 @@ if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
 
      if(!is_null(($lot))) {
         $categories_rows = get_catagories($link);
-
-        // $page_content = include_template('lot.php', 
-        //     [
-        //     'categories_rows' => $categories_rows,
-        //     'lot' => $lot] );
-     }
-
-     else {
-        $page_content = include_template('404.php', 
-        ['error' => 'Такого лота нет'] );
-        
      }
 }
-else {
-    $page_content = include_template('404.php', 
-    ['error' => 'Такого лота нет'] );
+
+if(is_null($lot) || !isset($lot['id'])) {
+    http_response_code(404);
+    $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+    print($layout_content);
+    exit();
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['bet'])) {
@@ -60,15 +52,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['bet'])) {
     }
 
     if(empty($error['bet'])) { 
-        $add_bet = add_bet($link, $lot, $bet);
+        $add_bet = add_bet($link, $lot, $bet, $is_auth);
         header("Location: lot.php?lot_id=$lot_id");
     }
 
 }
 
-
 $page_content = include_template('lot.php', ['categories_rows' => $categories_rows,'lot' => $lot, 'error' => $error, 'is_auth' => $is_auth, 'bets' => $bets] );
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Страница лота', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);
 

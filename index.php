@@ -16,9 +16,8 @@ $lots_rows = get_lots($link);
 // Вызов функция для показа категорий 
 $categories_rows = get_catagories($link);
 
-$user_name = $_SESSION['user']['user_name'] ?? "";
 $is_auth = $_SESSION['user']?? "";
 $page_content = include_template('index.php', ['lots_rows' => $lots_rows, 'categories_rows' => $categories_rows]);
-$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Главная YetiCave', 'user_name' => $user_name, 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+$layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Главная YetiCave', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
 
 print($layout_content);
