@@ -19,7 +19,6 @@ function include_template($name, $data) {
     return $result;
 }
 
-
 // Функция для прайстега - принимает сумму товара, преобразует ее в формат с разделителем и знаком рубля
 function price_tag ($number) {
     $ceil_number = ceil($number);
