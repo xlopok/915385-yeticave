@@ -29,8 +29,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛ�
         if(empty($login_form[$field])) {
             $errors[$field] = 'Поле ' .$field .' не может быть пустым';
         }
+        if (!isset($login_form[$field])) {
+            http_response_code(404);
+            $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'Заполните все обязательные поля']);
+            $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+            print($layout_content);
+            exit();
+        }
     }
-
+    
     $res = unique_email_give_all($link, $login_form, $errors); 
 
     $user = $res ? mysqli_fetch_array($res, MYSQLI_ASSOC) : null;
@@ -55,7 +62,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') { //ЕСЛИ ФОРМА ОТПРАВЛ�
 
 $page_content = include_template('login.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'login_form' =>$login_form  ]);
 $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Вход', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
-
-
 
 print($layout_content);

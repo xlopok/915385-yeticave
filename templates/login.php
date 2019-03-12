@@ -2,7 +2,7 @@
       <ul class="nav__list container">
       <?php foreach($categories_rows as $categories_item): ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$categories_item['name']?></a>
+                <a href="pages/all-lots.html"><?=htmlspecialchars($categories_item['name'])?></a>
             </li>    
      <?php endforeach; ?>
       </ul>
@@ -15,7 +15,7 @@
       $error_span = isset($errors['email']) ? $errors['email'] : "";?>
       <div class="form__item <?= $class_div;?>"> <!-- form__item--invalid -->
         <label for="email">E-mail*</label>
-        <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?= $value;?>">
+        <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?= htmlspecialchars($value);?>">
         <span class="form__error"><?= $error_span;?></span>
       </div>
       <?php $class_div = isset($errors['password']) ? "form__item--invalid" : '';

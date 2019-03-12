@@ -5,7 +5,7 @@
             <!--заполните этот список из массива категорий-->
             <?php foreach($categories_rows as $categories_item): ?>
             <li class="promo__item promo__item--boards">
-                <a class="promo__link" href="pages/all-lots.html"><?=$categories_item['name']?></a>
+                <a class="promo__link" href="pages/all-lots.html"><?=htmlspecialchars($categories_item['name'])?></a>
             </li>
             
             <?php endforeach; ?>
@@ -24,14 +24,14 @@
                 </div>
                 <div class="lot__info">
                     <span class="lot__category"><?=htmlspecialchars($item['category_name'])?></span>
-                    <h3 class="lot__title"><a class="text-link" href="lot.php?lot_id=<?= $item['id']; ?>"><?=htmlspecialchars($item['lot_name']);?></a></h3>
+                    <h3 class="lot__title"><a class="text-link" href="lot.php?lot_id=<?= htmlspecialchars($item['id']); ?>"><?=htmlspecialchars($item['lot_name']);?></a></h3>
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?=price_tag(htmlspecialchars($item['starting_price']));?></span>
                         </div>
                         <div class="lot__timer timer">
-                            <?=time_interval($item['dt_end'])?>
+                            <?=time_interval(htmlspecialchars($item['dt_end']))?>
                         </div>
                     </div>
                 </div>

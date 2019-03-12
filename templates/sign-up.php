@@ -2,7 +2,7 @@
     <ul class="nav__list container">
     <?php foreach($categories_rows as $categories_item): ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$categories_item['name']?></a>
+                <a href="pages/all-lots.html"><?=htmlspecialchars($categories_item['name'])?></a>
             </li>    
      <?php endforeach; ?>
     </ul>
@@ -16,7 +16,7 @@
     ?>
     <div class="form__item <?=$classname_div; ?>"> <!-- form__item--invalid -->
     <label for="email">E-mail*</label>
-    <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?= $value; ?>" >
+    <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?= htmlspecialchars($value); ?>" >
     <span class="form__error"><?=$error_span; ?></span>
     </div>
     <?php $classname_div = isset($errors['password']) ? "form__item--invalid" : "";
@@ -34,7 +34,7 @@
     ?>
     <div class="form__item <?=$classname_div; ?>">
     <label for="name">Имя*</label>
-    <input id="name" type="text" name="name" placeholder="Введите имя" value="<?= $value; ?>">
+    <input id="name" type="text" name="name" placeholder="Введите имя" value="<?= htmlspecialchars($value); ?>">
     <span class="form__error"><?=$error_span; ?></span>
     </div>
     <?php $classname_div = isset($errors['message']) ? "form__item--invalid" : "";
@@ -43,7 +43,7 @@
     ?>
     <div class="form__item <?=$classname_div; ?>">
     <label for="message">Контактные данные*</label>
-    <textarea id="message" name="message" placeholder="Напишите как с вами связаться" ><?= $value; ?></textarea>
+    <textarea id="message" name="message" placeholder="Напишите как с вами связаться" ><?= htmlspecialchars($value); ?></textarea>
     <span class="form__error"><?=$error_span; ?></span>
     </div>
 
@@ -68,5 +68,5 @@
     </div>
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
     <button type="submit" class="button">Зарегистрироваться</button>
-    <a class="text-link" href="#">Уже есть аккаунт</a>
+    <a class="text-link" href="login.php">Уже есть аккаунт</a>
 </form>

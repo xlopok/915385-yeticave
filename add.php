@@ -35,8 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 
 	foreach ($required as $field) { // Проходим по массиву с обязательными полями и проверяем их на заполненность (не на пустоту)
 		if (empty($lot[$field])) {  // Если путой, то добавляем ошибку 
-						$errors[$field] = 'Это поле надо заполнить';
+			$errors[$field] = 'Это поле надо заполнить';
 		}
+		if (!isset($lot[$field])) {
+            http_response_code(404);
+            $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'Заполните все обязательные поля']);
+            $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+            print($layout_content);
+            exit();
+        }
 	}
 
 	if (empty($lot['lot-name'])) { //Проверка на пустоту имени лота
@@ -76,13 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 	// ПРОВЕРКА ФАЙЛА 
 	if (!empty($_FILES['lot-photo']['name'])) {
 		$tmp_name = $_FILES['lot-photo']['tmp_name'];
-		$path = $_FILES['lot-photo']['name'];
+		$path = uniqid() .$_FILES['lot-photo']['name'];
 
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		$file_type = finfo_file($finfo, $tmp_name);
 		if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg" ) {
 			$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';	
 		}
+		
 	}
 	else {
 		$errors['lot-photo'] = 'Загрузите картинку в формате jpg/png/jpeg';
@@ -99,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 			$lot_id = mysqli_insert_id($link);
 		
 			header("Location: lot.php?lot_id=" . $lot_id);
+			exit();
 		}
 	}
 }

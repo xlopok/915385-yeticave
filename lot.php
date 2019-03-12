@@ -8,27 +8,32 @@ require_once('mysql_connect.php'); // Подключение к бд
 
 mysqli_set_charset($link, "utf8"); // установка кодировки к бд
 
+if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШИБКА
+	$error = mysqli_connect_error();
+	show_error($page_content, $error);
+	exit();
+}
+
+$categories_rows = get_catagories($link); // Передаем список категорий
+
 $is_auth = $_SESSION['user']?? "";
 
 $error['bet'] = null;
+$lot_id = $_GET['lot_id']; 
 
 // Условие для параметра запроса и отображение нужногоа лота по его id
 
 if (isset($_GET['lot_id']) && $_GET['lot_id'] !== '') {
 
-     $lot_id = $_GET['lot_id']; 
      $lot = get_lot($link, $lot_id);
      $bets = get_bets_for_lot($link, $lot_id);   
 
-     if(!is_null(($lot))) {
-        $categories_rows = get_catagories($link);
-     }
 }
 
-if(is_null($lot) || !isset($lot['id'])) {
+if( !isset($lot['id']) || $_GET['lot_id'] === '') {
     http_response_code(404);
-    $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'ВОЙДИТЕ НА САЙТ']);
-    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+    $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'Такого лота нет']);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Ошибка', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
     print($layout_content);
     exit();
 }
@@ -54,6 +59,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['bet'])) {
     if(empty($error['bet'])) { 
         $add_bet = add_bet($link, $lot, $bet, $is_auth);
         header("Location: lot.php?lot_id=$lot_id");
+        exit();
     }
 
 }

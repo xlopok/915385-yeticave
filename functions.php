@@ -61,37 +61,43 @@ function show_error(&$content, $error) {
 // Функция для БД - чтение категорий 
 
 function get_catagories($link) {
-    $categories_rows = [];
-
     $sql_categories = "SELECT * FROM categories";
 
     $result_categories = mysqli_query($link, $sql_categories);
-
-    $categories_rows = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
+    if( $result_categories) {
+        $categories_rows = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
     return $categories_rows;
 }
 
 // Функция для БД - чтение лотов
 
 function get_lots($link) {
-    $lots_rows = [];
-
     $sql_lots = "SELECT l.id ,l.name as lot_name, starting_price, l.dt_end, img, c.name as category_name
     FROM lots l
     JOIN  categories c
     ON category_id = c.id
     WHERE winner_user_id IS NULL
     ORDER BY l.dt_add DESC";
-
+    
     $result_lots = mysqli_query($link, $sql_lots);
-
-    $lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
+    if( $result_lots) {
+        $lots_rows = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
     return $lots_rows;
 }
 
 function get_lot($link, $lot_id) {
-    $show_lot = [];
-
     $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, l.bet_step, l.dt_end, l.author_id, c.name AS category, MAX(b.pricetag) as max_bet 
     FROM lots l 
     JOIN categories c
@@ -102,16 +108,21 @@ function get_lot($link, $lot_id) {
 
     $result_lot = mysqli_query($link, $sql_lot);
 
-    $show_lot = mysqli_fetch_assoc($result_lot);
-
+    if( $result_lot) {
+        $show_lot = mysqli_fetch_assoc($result_lot);
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
+   
     return $show_lot;
 }
 
 // Получаем список ставок для конкретного лота на странице этого лота
 
 function get_bets_for_lot($link, $lot_id) {
-    $show_bets = [];
-
     $sql = "SELECT l.id, u.user_name, b.pricetag, b.user_id ,b.dt_add 
     FROM lots l
     JOIN bets b
@@ -123,9 +134,14 @@ function get_bets_for_lot($link, $lot_id) {
     LIMIT 10";
     
     $result_bets = mysqli_query($link, $sql);
-
-    $show_bets = mysqli_fetch_all($result_bets, MYSQLI_ASSOC);
-
+    if($result_bets) {
+        $show_bets = mysqli_fetch_all($result_bets, MYSQLI_ASSOC) ?? [];
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
     return $show_bets;
 
 }
@@ -148,7 +164,14 @@ function add_lot ($link, $lot, $is_auth) {
         $lot['category']
         ]);
    $res = mysqli_stmt_execute($stmt);
-   return $res;
+   if($res) {
+    return $res;
+   }
+   else {
+    $error = mysqli_error($link);
+    $result = print('Ошибка MySQL ' . $error);
+    exit();
+   }
 }
 
 
@@ -166,8 +189,14 @@ function add_bet($link, $lot, $bet, $is_auth) {
         ]);
 
     $res = mysqli_stmt_execute($stmt);
-
-    return $res;
+    if($res) {
+         return $res;
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
 }
 
 // ФУНКЦИЯ НА СТРАНИЦЕ ФОРМЫ - РЕГИСТРАЦИИ ЮЗЕРА, ДОБАВЛЯЕТ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
@@ -187,8 +216,14 @@ function add_user ($link, $reg_form) {
         ]);
 
     $res = mysqli_stmt_execute($stmt);
-
-    return $res;     
+    if($res) {
+    return $res;
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }     
 }
 
 // Проверяем имейл на уникальность 
@@ -196,8 +231,15 @@ function unique_email_give_all($link, $login_form, $errors) {
     $email = mysqli_real_escape_string($link, $login_form['email']);
     $sql = "SELECT * FROM users WHERE email = '$email'";
     $res = mysqli_query($link, $sql);
-  
-    return $res;
+    
+    if($res) {
+        return $res;
+    }
+    else {
+        $error = mysqli_error($link);
+        $result = print('Ошибка MySQL ' . $error);
+        exit();
+    }
 }
 
 /**

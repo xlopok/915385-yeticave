@@ -29,26 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty($reg_form[$field])) {
             $errors[$field] = "Не заполнено поле " . $field;
         }
-    }
 
-    // ПРОВЕРКА ФАЙЛА 
-    if (!empty($_FILES['avatar']['name'])) {
-        $tmp_name = $_FILES['avatar']['tmp_name'];
-        $path = $_FILES['avatar']['name'];
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $file_type = finfo_file($finfo, $tmp_name);
-        if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
-            $errors['avatar'] = 'Загрузите картинку в формате jpg/png/jpeg';
-           	
+        if (!isset($reg_form[$field])) {
+            http_response_code(404);
+            $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'Заполните все обязательные поля']);
+            $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
+            print($layout_content);
+            exit();
         }
-        else {
-            move_uploaded_file($tmp_name, 'img/' . $path);
-            $reg_form['avatar'] = $path;
-        }
-    }
-    else {
-        $reg_form['avatar'] = '';
+        
     }
 
     // Проверяем формат имейла
@@ -61,6 +50,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (mysqli_num_rows($unique_email) > 0) { 
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
+    }
+
+     // ПРОВЕРКА ФАЙЛА 
+    if (!empty($_FILES['avatar']['name'])) {
+        $tmp_name = $_FILES['avatar']['tmp_name'];
+        $path = uniqid() .$_FILES['avatar']['name'];
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $file_type = finfo_file($finfo, $tmp_name);
+        if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
+            $errors['avatar'] = 'Загрузите картинку в формате jpg/png/jpeg';
+           	
+        }
+        elseif(!count($errors)) {
+            move_uploaded_file($tmp_name, 'img/' . $path);
+            $reg_form['avatar'] = $path;
+        }
+    }
+    else {
+        $reg_form['avatar'] = '';
     }
 
     if (!count($errors)) { // ОШИБОК НЕТ - ДОБАВЛЯКМ ЮЗЕРА
@@ -79,7 +88,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $page_content = include_template('sign-up.php', ['categories_rows' => $categories_rows, 'errors' => $errors, 'reg_form' => $reg_form] );
 $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Регистрация', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
-
-
 
 print($layout_content);

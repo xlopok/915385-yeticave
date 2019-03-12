@@ -57,7 +57,7 @@
            
             <?php foreach($categories_rows as $categories_item): ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$categories_item['name']?></a>
+                <a href="pages/all-lots.html"><?=htmlspecialchars($categories_item['name'])?></a>
             </li>
             
             <?php endforeach; ?>

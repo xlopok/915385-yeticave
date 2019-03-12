@@ -2,7 +2,7 @@
       <ul class="nav__list container">
       <?php foreach($categories_rows as $categories_item): ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$categories_item['name']?></a>
+                <a href="pages/all-lots.html"><?=htmlspecialchars($categories_item['name'])?></a>
             </li>
             
             <?php endforeach; ?>
@@ -18,7 +18,7 @@
        ?>
         <div class="form__item <?=$classname_div; ?>"> <!--  -->
           <label for="lot-name">Наименование</label>
-          <input id="lot-name" type="text" value="<?= $value ;?>" name="lot-name" placeholder="Введите наименование лота" >
+          <input id="lot-name" type="text" value="<?= htmlspecialchars($value) ;?>" name="lot-name" placeholder="Введите наименование лота" >
           <?php if (isset($errors['lot-name'])): ?>
           <span class="form__error"><?=$errors['lot-name']; ?></span>
           <?php endif; ?>
@@ -31,8 +31,8 @@
           <select id="category" name="category" required>
             <option>Выберите категорию</option>
             <?php foreach($categories_rows as $categories_item): ?>
-            <option value="<?=$categories_item['id'] ?>" <?php $sel = ($value ==  $categories_item['id']) ? 'selected' : "";?> <?=$sel; ?>>
-              <?=$categories_item['name'];?>
+            <option value="<?=htmlspecialchars($categories_item['id']) ?>" <?php $sel = ($value ===  $categories_item['id']) ? 'selected' : "";?> <?=htmlspecialchars($sel); ?>>
+              <?=htmlspecialchars($categories_item['name']);?>
             </option>
             <?php endforeach; ?>
           </select>
@@ -47,7 +47,7 @@
        ?>
       <div class="form__item form__item--wide <?= $classname_div;?>"> <!-- form__item--invalid -->
         <label for="message">Описание</label>
-        <textarea id="message" name="message" placeholder="Напишите описание лота" ><?= $value ;?></textarea>
+        <textarea id="message" name="message" placeholder="Напишите описание лота" ><?= htmlspecialchars($value) ;?></textarea>
         <span class="form__error"><?=$error_span;?></span>
       </div>
       <?php $classname_div = isset($errors['lot-photo']) ? "form__item--invalid" : "";
@@ -78,7 +78,7 @@
        ?>
         <div class="form__item form__item--small <?= $classname_div;?>"> <!-- form__item--invalid -->
           <label for="lot-rate">Начальная цена</label>
-          <input id="lot-rate" type="number" name="lot-rate" placeholder="0" value="<?= $value;?>" >
+          <input id="lot-rate" type="number" name="lot-rate" placeholder="0" value="<?= htmlspecialchars($value);?>" >
           <span class="form__error"><?= $error_span;?></span>
         </div>
         <?php $classname_div = isset($errors['lot-step']) ? "form__item--invalid" : "";
@@ -87,7 +87,7 @@
         ?>
         <div class="form__item form__item--small <?= $classname_div;?>">
           <label for="lot-step">Шаг ставки</label>
-          <input id="lot-step" type="number" name="lot-step" placeholder="0" value="<?= $value;?>">
+          <input id="lot-step" type="number" name="lot-step" placeholder="0" value="<?= htmlspecialchars($value);?>">
           <span class="form__error"><?=  $error_span;?></span>
         </div>
         <?php $classname_div = isset($errors['lot-date']) ? "form__item--invalid" : "";
@@ -96,7 +96,7 @@
        ?>
         <div class="form__item <?= $classname_div;?>">
           <label for="lot-date">Дата окончания торгов</label>
-          <input class="form__input-date" id="lot-date" type="date" name="lot-date" value="<?= $value;?>">
+          <input class="form__input-date" id="lot-date" type="date" name="lot-date" value="<?= htmlspecialchars($value);?>">
           <span class="form__error"><?=  $error_span;?></span>
         </div>
       </div>
