@@ -1,6 +1,16 @@
 <?php
 
-// Подключает теймплейт, принимает имя темплейта и массив с данными
+/**
+   *  Фукция шаблонизатор
+   *  Функция принимает два аргумента: имя файла шаблона и ассоциативный массив с данными для этого шаблона.
+   *  Функция возвращает строку — итоговый HTML-код с подставленными данными.
+   *
+   *  @param string $name - имя файла шаблона.
+   *  @param mixed [] $data - ассоциативный массив с данными для этого шаблона.
+   *
+   *  @return string - возвращает строку - итоговый HTML-код с подставленными данными 
+   *
+   */
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -19,13 +29,27 @@ function include_template($name, $data) {
     return $result;
 }
 
-// Функция для прайстега - принимает сумму товара, преобразует ее в формат с разделителем и знаком рубля
+/**
+   * Функция для прайстега - принимает сумму товара, преобразует ее в формат с разделителем и знаком рубля
+   * Функция принимает один аргумент — целое число.
+   * 
+   * @param  $price int - исходящая цена лота.
+   * @return string - возвращает строку с округленным, разделенными на разряды число со знаком ₽.
+   *
+   */
 function price_tag ($number) {
     $ceil_number = ceil($number);
     return number_format( $ceil_number, 0,"." ," ") . " ₽";    
 }
 
-// Время, которое останется до исчезновения лота - принимет время окончания торгов для лота и выдает его в формате ЧЧ:ММ
+/**
+   * Функция - Время, которое останется до исчезновения лота
+   * Функция принимает один аргумент — целое число.
+   * 
+   * @param  $price int - дата, до которой лот будет учавствовать в аукционе.
+   * @return string - возвращает  строку в формате ЧЧ:ММ
+   *
+   */
 function time_interval ($time_end) {
     $time_now = strtotime('now');
     $time_end = strtotime($time_end);
@@ -37,10 +61,11 @@ function time_interval ($time_end) {
   }
 
 /**
-* Проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
-* @param string $date строка с датой
-* @return bool
-*/
+    * Функция провкрка даты
+    * Функция проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
+    * @param string $date строка с датой
+    * @return bool true/false
+    */
 function check_date_format($date) {
    $result = false;
    $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
@@ -57,8 +82,14 @@ function show_error(&$content, $error) {
     $page_content = include_template('404.php', ['error' => $error]);
 }
 
-// Функция для БД - чтение категорий 
-
+/**
+    *
+    * Функция получает список категорий из бд
+    * @param $link mysqli Ресурс соединения
+    * 
+    * @return array - возвращает массив со списком категорий.
+    *
+    */
 function get_catagories($link) {
     $sql_categories = "SELECT * FROM categories";
 
@@ -68,14 +99,18 @@ function get_catagories($link) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
     return $categories_rows;
 }
 
-// Функция для БД - чтение лотов
-
+/**
+    * Функция получает список лотов из бд
+    * @param $link mysqli Ресурс соединения
+    * 
+    * @return array - возвращает массив со списком лотов.
+    *
+    */
 function get_lots($link) {
     $sql_lots = "SELECT l.id ,l.name as lot_name, starting_price, l.dt_end, img, c.name as category_name
     FROM lots l
@@ -90,12 +125,18 @@ function get_lots($link) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
     return $lots_rows;
 }
 
+/**
+    * Функция получает список данных по конкретному лоту из бд
+    * @param $link mysqli Ресурс соединения
+    * @param $lot_id string - id лота
+    * @return array - возвращает массив со списком данных о конкретном лоте.
+    *
+    */
 function get_lot($link, $lot_id) {
     $sql_lot = "SELECT l.id, l.name AS lot_name, l.description, l.img, l.starting_price, l.bet_step, l.dt_end, l.author_id, c.name AS category, MAX(b.pricetag) as max_bet 
     FROM lots l 
@@ -112,15 +153,19 @@ function get_lot($link, $lot_id) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
    
     return $show_lot;
 }
 
-// Получаем список ставок для конкретного лота на странице этого лота
-
+/**
+    * Функция получает список ставок для конкретного лота из бд
+    * @param $link mysqli Ресурс соединения
+    * @param $lot_id string - id лота
+    * @return array - возвращает массив со списком ставок на конкретном лоте.
+    *
+    */
 function get_bets_for_lot($link, $lot_id) {
     $sql = "SELECT l.id, u.user_name, b.pricetag, b.user_id ,b.dt_add 
     FROM lots l
@@ -138,15 +183,19 @@ function get_bets_for_lot($link, $lot_id) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
     return $show_bets;
 
 }
 
-// Добавляем лот
-
+/**
+   * Функция добавляет новую запись в таблице лотов lots
+   * @param $link mysqli Ресурс соединения
+   * @param $lot array - данные формы из массива $_POST
+   * @param $is_auth string - данные о сессии юзера
+   * @return $res bool - ресурс/результат запроса к бд.
+   */
 function add_lot ($link, $lot, $is_auth) {
     $sql = 'INSERT INTO lots (dt_add, name, description, img, starting_price, dt_end, bet_step, author_id, category_id) 
     VALUES (NOW(),?, ?, ?, ?, ?, ?, ?, ?)';
@@ -168,13 +217,19 @@ function add_lot ($link, $lot, $is_auth) {
    }
    else {
     $error = mysqli_error($link);
-    $result = print('Ошибка MySQL ' . $error);
     exit();
    }
 }
 
-
-// Добавим ставку в таблицу ставок на странице лота 
+ 
+/**
+   * Функция добавляет новую запись ставки в таблице bets
+   * @param $link mysqli Ресурс соединения
+   * @param $lot array - массив со списком данных о лоте
+   * @param $bet string - данные формы ставки из массива $_POST
+   * @param $is_auth string - данные о сессии юзера
+   * @return $res bool - ресурс/результат запроса к бд.
+   */
 
 function add_bet($link, $lot, $bet, $is_auth) {
     $sql = 'INSERT INTO bets (dt_add, pricetag, user_id, lot_id) 
@@ -193,12 +248,17 @@ function add_bet($link, $lot, $bet, $is_auth) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
 }
 
-// ФУНКЦИЯ НА СТРАНИЦЕ ФОРМЫ - РЕГИСТРАЦИИ ЮЗЕРА, ДОБАВЛЯЕТ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
+/**
+   * Функция добавляет пользователя
+   * @param $link mysqli Ресурс соединения
+   * @param $reg_form array - данные формы из массива $_POST
+   * @return $res bool - ресурс/результат запроса к бд.
+   *
+   */
 
 function add_user ($link, $reg_form) {
     $password = password_hash($reg_form['password'], PASSWORD_DEFAULT);
@@ -220,12 +280,17 @@ function add_user ($link, $reg_form) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }     
 }
 
-// Проверяем имейл на уникальность 
+/**
+   * Функция Проверяем имейл на уникальность
+   * @param $link mysqli Ресурс соединения
+   * @param $login_form array - данные формы из массива $_POST
+   * @return array - ресурс/результат запроса к бд.
+   *
+*/
 function unique_email_give_all($link, $login_form, $errors) {
     $email = mysqli_real_escape_string($link, $login_form['email']);
     $sql = "SELECT * FROM users WHERE email = '$email'";
@@ -236,7 +301,6 @@ function unique_email_give_all($link, $login_form, $errors) {
     }
     else {
         $error = mysqli_error($link);
-        $result = print('Ошибка MySQL ' . $error);
         exit();
     }
 }

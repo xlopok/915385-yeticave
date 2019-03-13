@@ -52,27 +52,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
     }
 
-     // ПРОВЕРКА ФАЙЛА 
-    if (!empty($_FILES['avatar']['name'])) {
-        $tmp_name = $_FILES['avatar']['tmp_name'];
-        $path = uniqid() .$_FILES['avatar']['name'];
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $file_type = finfo_file($finfo, $tmp_name);
-        if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
-            $errors['avatar'] = 'Загрузите картинку в формате jpg/png/jpeg';
-           	
-        }
-        elseif(!count($errors)) {
-            move_uploaded_file($tmp_name, 'img/' . $path);
-            $reg_form['avatar'] = $path;
-        }
-    }
-    else {
-        $reg_form['avatar'] = '';
-    }
+   
 
     if (!count($errors)) { // ОШИБОК НЕТ - ДОБАВЛЯКМ ЮЗЕРА
+
+          // ПРОВЕРКА ФАЙЛА 
+        if (!empty($_FILES['avatar']['name'])) {
+            $tmp_name = $_FILES['avatar']['tmp_name'];
+            $path = uniqid() .$_FILES['avatar']['name'];
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $file_type = finfo_file($finfo, $tmp_name);
+            if ($file_type !== "image/jpg" && $file_type !== "image/png" && $file_type !== "image/jpeg") {
+                $errors['avatar'] = 'Загрузите картинку в формате jpg/png/jpeg';
+                
+            }
+            else {
+                move_uploaded_file($tmp_name, 'img/' . $path);
+                $reg_form['avatar'] = $path;
+            }
+        }
+        else {
+            $reg_form['avatar'] = '';
+        }
+
         $res = add_user($link, $reg_form);
 
         if ($res && empty($errors)) {

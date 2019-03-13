@@ -105,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { //ПРОВЕРКА БЫЛА ЛЕ О�
 
 		if ($add_lot) {
 			$lot_id = mysqli_insert_id($link);
-		
 			header("Location: lot.php?lot_id=" . $lot_id);
 			exit();
 		}
