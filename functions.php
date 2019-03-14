@@ -78,9 +78,10 @@ function check_date_format($date) {
 
 // Функция подключения страницы с ошибкой
 
-function show_error($error) {
+function show_error($error, $is_auth) {
     $page_content = include_template('404.php', ['error' => $error]);
-    print($page_content);
+    $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'ОШИБКА БД', 'is_auth' => $is_auth??'', 'categories_rows' => $categories_rows?? []]);
+    print($layout_content);
 }
 
 /**
