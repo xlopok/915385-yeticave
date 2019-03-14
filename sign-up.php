@@ -10,8 +10,8 @@ mysqli_set_charset($link, "utf8"); // установка кодировки к �
 
 if (!$link) { //ЕСЛИЛ НЕТ РЕСУРСА СОЕДИНЕНИЯ, ТО ОШИБКА
     $error = mysqli_connect_error();
-    show_error($page_content, $error);
-    exit();
+	show_error($error);
+	exit();
 }
 
 $categories_rows = get_catagories($link); // Передаем список категорий
@@ -26,30 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $req_fields = ['email', 'password', 'name', 'message'];
 
     foreach ($req_fields as $field) {
-        if (empty($reg_form[$field])) {
+        if (empty($reg_form[$field]) || !isset($reg_form[$field])) {
             $errors[$field] = "Не заполнено поле " . $field;
-        }
-
-        if (!isset($reg_form[$field])) {
-            http_response_code(404);
-            $page_content = include_template('404.php', ['categories_rows' => $categories_rows, 'error' => 'Заполните все обязательные поля']);
-            $layout_content = include_template('layout.php', ['content' =>$page_content, 'title' => 'Yeticave - Добавление товара', 'is_auth' => $is_auth, 'categories_rows' => $categories_rows]);
-            print($layout_content);
-            exit();
-        }
-        
+        }    
     }
 
-    // Проверяем формат имейла
-    if(!filter_var($reg_form['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Введите валидный имейл в формате name@mail.com';
-    }
+    if (!count($errors)) {
+        // Проверяем формат имейла
+        if(!filter_var($reg_form['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Введите валидный имейл в формате name@mail.com';
+        }
 
-    // ПРОВЕРЯЕМ ИМЕЙЛ, УНИКАЛЕН ЛИ ОН
-    $unique_email = unique_email_give_all($link, $reg_form, $errors);
+        // ПРОВЕРЯЕМ ИМЕЙЛ, УНИКАЛЕН ЛИ ОН
+        $unique_email = unique_email_give_all($link, $reg_form);
 
-    if (mysqli_num_rows($unique_email) > 0) { 
-        $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
+        if (mysqli_num_rows($unique_email) > 0) { 
+            $errors['email'] = 'Пользователь с этим email уже зарегистрирован';    
+        }
     }
 
    

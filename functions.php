@@ -78,8 +78,9 @@ function check_date_format($date) {
 
 // Функция подключения страницы с ошибкой
 
-function show_error(&$content, $error) {
+function show_error($error) {
     $page_content = include_template('404.php', ['error' => $error]);
+    print($page_content);
 }
 
 /**
@@ -291,7 +292,7 @@ function add_user ($link, $reg_form) {
    * @return array - ресурс/результат запроса к бд.
    *
 */
-function unique_email_give_all($link, $login_form, $errors) {
+function unique_email_give_all($link, $login_form) {
     $email = mysqli_real_escape_string($link, $login_form['email']);
     $sql = "SELECT * FROM users WHERE email = '$email'";
     $res = mysqli_query($link, $sql);
