@@ -191,6 +191,32 @@ function get_bets_for_lot($link, $lot_id) {
 
 }
 
+// ПОЛУЧПЕМ РЕЗУЛЬТАТ ПОИСКА ПРИНИМЕМ РЕСУРС СОЕДИНЕНИЯ И ПАРАМЕТР ЗАПРОСА $_GET['search']
+// ВОЗВРАЩАЕМ МАССИВ С ЛОТАМИ И ИХ ДАННЫМИ, В КОТОРЫХ В ПОЛЕ ИМЯ И В ПОЛЕ ОПИСАНИЯ ЕСТЬ $_GET['search'] (ТО ЧТО ИЩЕТ ЮЗЕР)
+function search_results($link, $search) {
+    $sql = "SELECT l.id, l.dt_add ,l.name as lot_name, description ,starting_price, l.dt_end, img, c.name as category_name
+    FROM lots l
+    JOIN  categories c
+    ON category_id = c.id
+    WHERE MATCH(l.name, description)
+    AGAINST(?)
+    ORDER BY l.dt_add DESC";
+
+    $stmt = db_get_prepare_stmt($link, $sql, [$search]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if($result) {
+
+        $searched_lots = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        return $searched_lots;
+    }
+
+    else {
+        $error = mysqli_error($link);
+        exit();
+    }
+}
+
 /**
    * Функция добавляет новую запись в таблице лотов lots
    * @param $link mysqli Ресурс соединения

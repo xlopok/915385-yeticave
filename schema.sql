@@ -47,3 +47,8 @@ CREATE TABLE users (
     avatar TEXT,
     contacts TEXT NOT NULL
 );
+
+-- Создадим инструкцию на создание полнотекстового индекса для полей 
+-- "название" и "описание" в таблице лотов.
+
+CREATE FULLTEXT INDEX searech_index ON lots(name,description);

@@ -16,12 +16,12 @@ VALUES
 
 INSERT INTO lots (name, description, starting_price, bet_step, author_id, winner_user_id, category_id, img, dt_end) 
 VALUES
-    ("2014 Rossignol District Snowboardа","Дешевая, но сердитая доска", 10999, 1000, 1, null, 1, "lot-1.jpg", "2019-06-01"),
-    ("DC Ply Mens 2016/2017 Snowboardа","Дорогущая и быстрая как ламба", 159999, 5000, 2, null, 1, "lot-2.jpg", "2019-06-01"),
-    ("Крепления Union Contact Pro 2015 года размер L/XLа","Не вылетишь, крепят намертво", 8000, 500, 3, null, 2, "lot-3.jpg", "2019-06-01"),
-    ("Ботинки для сноуборда DC Mutiny Charocalа","Тепло, надежно, леопардово", 10999, 1000, 4, null, 3, "lot-4.jpg", "2019-06-01"),
-    ("Куртка для сноуборда DC Mutiny Charocalа","Яркая и теплая куртка", 7500, 300, 1, null, 4, "lot-5.jpg", "2019-06-01"),
-    ("Маска Oakley Canopyа", "Сквозь эти очки хорошо видно трассу и не видно хейтеров", 5400, 200, 2, null, 6, "lot-6.jpg", "2019-06-01");
+    ("2014 Rossignol District Snowboard","Дешевая, но сердитая доска", 10999, 1000, 1, null, 1, "lot-1.jpg", "2019-06-01"),
+    ("DC Ply Mens 2016/2017 Snowboard","Дорогущая и быстрая как ламба", 159999, 5000, 2, null, 1, "lot-2.jpg", "2019-06-01"),
+    ("Крепления Union Contact Pro 2015 года размер L/XL","Не вылетишь, крепят намертво", 8000, 500, 3, null, 2, "lot-3.jpg", "2019-06-01"),
+    ("Ботинки для сноуборда DC Mutiny Charocal","Тепло, надежно, леопардово", 10999, 1000, 4, null, 3, "lot-4.jpg", "2019-06-01"),
+    ("Куртка для сноуборда DC Mutiny Charocal","Яркая и теплая куртка", 7500, 300, 1, null, 4, "lot-5.jpg", "2019-06-01"),
+    ("Маска Oakley Canopy", "Сквозь эти очки хорошо видно трассу и не видно хейтеров", 5400, 200, 2, null, 6, "lot-6.jpg", "2019-06-01");
 
 INSERT INTO bets (pricetag, user_id, lot_id) 
 VALUES
